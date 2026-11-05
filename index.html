@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ml">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം — Cloud Billing</title>
+<style>
+:root{--orange:#d97706;--deep:#9a3412;--cream:#fff8ed;--line:#ead9c4;--ink:#33251b;--muted:#806f60;--green:#18794e}*{box-sizing:border-box}body{margin:0;background:#f5eee4;color:var(--ink);font-family:system-ui,"Noto Sans Malayalam",sans-serif}.top{background:linear-gradient(120deg,#9a3412,#e28a20);color:white;padding:18px 16px;box-shadow:0 3px 12px #0002}.brand{font-weight:800;font-size:19px}.sub{font-size:12px;opacity:.9;margin-top:4px}.nav{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.nav button{border:1px solid #ffffff88;background:#ffffff20;color:white;padding:8px 13px;border-radius:9px}.wrap{max-width:1100px;margin:18px auto;padding:0 14px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#fffdf9;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 4px 14px #4b2d1410}.panel h2{font-size:17px;margin:0 0 13px;color:var(--deep)}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}.field label{font-size:13px;color:var(--muted);font-weight:650}input,select{width:100%;border:1px solid #ddcbb7;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--orange);color:white;font-weight:700;cursor:pointer}.btn.secondary{background:#f6e8d5;color:#87420e;border:1px solid #e8cba8}.btn.dark{background:#5b4635}.btn.small{padding:7px 10px;font-size:12px}.muted{color:var(--muted);font-size:12px}.search{margin:10px 0}.offering-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:390px;overflow:auto;padding:2px}.offer{border:1px solid var(--line);border-radius:10px;padding:10px;text-align:left;background:#fffaf2;cursor:pointer;color:var(--ink)}.offer b{display:block;font-size:13px}.offer span{font-size:12px;color:var(--deep)}.offer:active{background:#ffedcf}.cart-item{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid #eee0d0}.cart-item small{display:block;color:var(--muted)}.qty{display:flex;align-items:center;gap:5px}.qty button{border:1px solid var(--line);background:#fff3e1;border-radius:6px;padding:3px 8px}.total{display:flex;justify-content:space-between;font-weight:800;font-size:19px;padding:13px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.family{border:1px dashed #d6a66f;border-radius:10px;padding:12px;margin:10px 0;background:#fffaf3}.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2d241d;color:white;padding:10px 16px;border-radius:10px;display:none;z-index:10}.print-tools{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.print-tools select{max-width:130px}.print-area{background:white;color:#111;padding:16px}.receipt{background:white;color:#111;padding:18px;max-width:380px;margin:15px auto;border:1px dashed #aaa}.receipt h3{text-align:center}.receipt table{width:100%;border-collapse:collapse;font-size:13px}.receipt td{padding:5px 0;border-bottom:1px solid #ddd}.report-row{padding:9px 0;border-bottom:1px solid var(--line)}.login-screen{max-width:420px;margin:40px auto}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:600px){.admin-grid{grid-template-columns:1fr}}@media(max-width:760px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr 1fr}}@media print{body *{visibility:hidden!important}.print-area,.print-area *{visibility:visible!important}.print-area{position:absolute;left:0;top:0;width:100%;border:0!important;margin:0!important;padding:4mm!important;box-shadow:none!important}.print-area button,.no-print{display:none!important}body.print-thermal .print-area{width:var(--thermal-width,80mm)!important;max-width:var(--thermal-width,80mm)!important;font-size:11px!important}body.print-normal .print-area{width:100%!important;max-width:none!important;font-size:12px!important}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header class="top"><div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div><div class="sub">ക്ലൗഡ് ബില്ലിംഗ് സിസ്റ്റം · എല്ലാ ഉപകരണങ്ങളിലും തത്സമയം പ്രവർത്തിക്കും</div><div class="nav"><button onclick="showPage('billing')">Billing</button><button onclick="showPage('history')">ബിൽ ചരിത്രം</button><button onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button><button id="adminNav" class="hidden" onclick="showPage('admin')">Admin Page</button><button onclick="logout()">Logout</button></div></header>
+
+<main id="billing" class="wrap hidden">
+<section class="panel"><h2>ഭക്തന്റെ വിവരങ്ങൾ</h2><div class="row"><div class="field"><label>ഭക്തന്റെ പേര്</label><input id="mainName" placeholder="പേര് നൽകുക"></div><div class="field"><label>നക്ഷത്രം</label><select id="mainStar"></select></div></div>
+<button class="btn secondary small" onclick="addFamily()">＋ കൂടുതൽ പേര് ചേർക്കുക</button><div id="familyArea"></div>
+<h2 style="margin-top:18px">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക</h2><input class="search" id="search" placeholder="മലയാളം / English വഴി തിരയുക…" oninput="renderOffers()"><div class="offering-grid" id="offers"></div>
+</section>
+<section class="panel"><h2>വഴിപാട് ബിൽ</h2><div id="cart"><div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div></div><div class="total"><span>ആകെ തുക</span><span id="grand">₹0</span></div>
+<div class="actions"><button class="btn secondary" onclick="toggleCalc()">🧮 കാൽക്കുലേറ്റർ</button><button class="btn" onclick="saveBill()">ബിൽ ക്ലൗഡിൽ സേവ് ചെയ്യുക</button></div>
+<div id="calc" class="family hidden"><b>പണം കണക്കാക്കുക</b><div class="field" style="margin-top:8px"><label>ബിൽ തുക</label><input id="calcBill" readonly></div><div class="field"><label>ഭക്തൻ നൽകിയ പണം</label><input id="paid" type="number" min="0" placeholder="തുക" oninput="calcChange()"></div><div class="total"><span>തിരികെ നൽകേണ്ടത്</span><span id="change">₹0</span></div></div>
+<div id="saveMsg" class="muted" style="margin-top:10px">ബിൽ സേവ് ചെയ്താൽ എല്ലാ ഡിവൈസുകളിലെയും ചരിത്രത്തിൽ തത്സമയം കാണാം.</div>
+</section></main>
+
+<section id="history" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>ബിൽ ചരിത്രം (ക്ലൗഡ് സിങ്ക്ഡ്)</h2><div id="historyList"></div></section>
+
+<section id="reports" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>റിപ്പോർട്ടുകൾ</h2><div class="actions no-print"><button class="btn secondary" onclick="setReportType('daily')">ഡെയിലി</button><button class="btn secondary" onclick="setReportType('monthly')">മാസം</button><button class="btn secondary" onclick="setReportType('yearly')">വർഷം</button></div><div class="row no-print"><div class="field"><label>തീയതി</label><input type="date" id="reportDate" onchange="renderReport()"></div></div><div id="reportData" class="print-area"></div><div class="print-tools no-print"><button class="btn secondary" onclick="printContent('normal')">A4 സാധാരണ Printer</button><button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button></div></section>
+
+<section id="login" class="panel login-screen"><h2>ലോഗിൻ</h2><div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div><button class="btn" onclick="demoLogin()">Login</button><p id="loginStatus" class="muted" role="status" aria-live="polite"></p><p class="muted">Firebase വഴിയുള്ള സുരക്ഷിത ലോഗിൻ.</p></section>
+
+<section id="admin" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>Admin Page · അഡ്മിൻ നിയന്ത്രണം</h2><div class="field"><label>ബില്ലിംഗ് സ്റ്റാഫ് പേരുകൾ (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStaff" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div><div class="field"><label><input id="cfgNormalReceipt" type="checkbox" style="width:auto"> രസീതിന് A4 സാധാരണ Printer ഓപ്ഷൻ Enable ചെയ്യുക</label></div><button class="btn" onclick="saveAdminSettings()">മാറ്റങ്ങൾ സേവ് ചെയ്യുക</button><p id="adminMsg" class="muted"></p></section>
+
+<div id="receiptHost"></div><div class="toast" id="toast"></div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBtS-s9a2D2Ew8DJe7fU-DdQpY1X6rQt1I",
+  authDomain: "bhoomivathukkal-temple.firebaseapp.com",
+  projectId: "bhoomivathukkal-temple",
+  storageBucket: "bhoomivathukkal-temple.firebasestorage.app",
+  messagingSenderId: "493340478186",
+  appId: "1:493340478186:web:919f9053363cfa6bf7e593",
+  measurementId: "G-W7YEGF4Y2S"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const LOGIN_EMAILS = {
+  admin: "akhileshashok32@gmail.com",
+  billing: "akhileshashok32+billing@gmail.com",
+  treasurer: "akhileshashok32+treasurer@gmail.com"
+};
+
+const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക്തപുഷ്പാഞ്ജലി','Rakthapushpanjali',20],['നെയ്യ് വിളക്ക്','Neyvilakku',30],['രുദ്രാഭിഷേകം','Rudrabhishekam',50],['വെള്ള നിവേദ്യം','Vella Nivedyam',20],['എള്ളുതിരി','Elluthiri',20],['പിൻവിളക്ക്','Pinvilakku',20],['മുട്ടറുക്കൽ','Muttarukkal',10],['മഞ്ഞൾ അർച്ചന','Manjal Archana',30],['ജലധാര','Jaladhara',10],['പായസം','Payasam',60],['പാൽപ്പായസം','Palpayasam',80],['ചോറൂണ്','Choroonu',151],['ഗണപതി ഹോമം','Ganapathi Homam',250],['വാഹന പൂജ - കാർ / വലിയ വാഹനം','Vehicle Pooja Car',100],['വാഹന പൂജ - ബൈക്ക് / ഇരുചക്ര വാഹനം','Vehicle Pooja Bike',50]];
+const stars=['അശ്വതി','ഭരണി','കാർത്തിക','രോഹിണി','മകയിരം','തിരുവാതിര','പുണർതം','പൂയം','ആയില്യം','മകം','പൂരം','ഉത്രം','അത്തം','ചിത്തിര','ചോതി','വിശാഖം','അനിഴം','തൃക്കേട്ട','മൂലം','പൂരാടം','ഉത്രാടം','തിരുവോണം','അവിട്ടം','ചതയം','പൂരുരുട്ടാതി','ഉത്രട്ടാതി','രേവതി'];
+
+let cart=[], families=[], bills=[], currentRole=null, currentStaff='';
+let settings={staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false};
+
+const starOpts=stars.map(s=>`<option>${s}</option>`).join('');
+document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;
+document.getElementById('reportDate').value=new Date().toISOString().slice(0,10);
+
+function renderOffers(){
+  let q=document.getElementById('search').value.toLowerCase();
+  document.getElementById('offers').innerHTML=offerings.map((o,i)=>({o,i})).filter(x=>(x.o[0]+x.o[1]).toLowerCase().includes(q)).map(({o,i})=>`<button class="offer" onclick="addOffer(${i})"><b>${o[0]}</b><span>${o[2]===null?'നിരക്ക് നൽകുക':'₹'+o[2]}</span></button>`).join('')||'<div class="muted">ഫലം ലഭിച്ചില്ല</div>';
+}
+
+function addOffer(i){
+  let o=offerings[i], rate=o[2];
+  if(rate===null){rate=Number(prompt('നിലവിലെ നിരക്ക് നൽകുക (₹)'));if(!rate||rate<0)return}
+  let found=cart.find(x=>x.i===i);
+  if(found)found.qty++;else cart.push({i,rate,qty:1});
+  renderCart();
+}
+
+function renderCart(){
+  let el=document.getElementById('cart');
+  if(!cart.length)el.innerHTML='<div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div>';
+  else el.innerHTML=cart.map((x,k)=>{let o=offerings[x.i];return `<div class="cart-item"><div><b>${o[0]}</b><small>₹${x.rate} × ${x.qty} = ₹${x.rate*x.qty}</small></div><div class="qty"><button onclick="changeQty(${k},-1)">−</button>${x.qty}<button onclick="changeQty(${k},1)">＋</button><button onclick="removeItem(${k})">×</button></div></div>`}).join('');
+  let t=total();document.getElementById('grand').textContent='₹'+t;document.getElementById('calcBill').value=t;calcChange();
+}
+
+function total(){return cart.reduce((s,x)=>s+x.rate*x.qty,0)}
+function changeQty(k,d){cart[k].qty+=d;if(cart[k].qty<=0)cart.splice(k,1);renderCart()}
+function removeItem(k){cart.splice(k,1);renderCart()}
+function addFamily(){families.push({name:'',star:''});renderFamilies()}
+function renderFamilies(){document.getElementById('familyArea').innerHTML=families.map((f,i)=>`<div class="family"><div class="actions" style="justify-content:space-between"><b>കുടുംബാംഗം ${i+1}</b><button class="btn small secondary" onclick="removeFamily(${i})">നീക്കുക</button></div><div class="row"><div class="field"><label>പേര്</label><input value="${esc(f.name)}" onchange="families[${i}].name=this.value" placeholder="പേര്"></div><div class="field"><label>നക്ഷത്രം</label><select onchange="families[${i}].star=this.value"><option value="">തിരഞ്ഞെടുക്കുക</option>${stars.map(s=>`<option ${f.star===s?'selected':''}>${s}</option>`).join('')}</select></div></div></div>`).join('')}
+function removeFamily(i){families.splice(i,1);renderFamilies()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toggleCalc(){document.getElementById('calc').classList.toggle('hidden');document.getElementById('calcBill').value=total()}
+function calcChange(){let v=Number(document.getElementById('paid').value||0)-total();document.getElementById('change').textContent='₹'+Math.max(0,v);}
+
+async function saveBill(){
+  let name=document.getElementById('mainName').value.trim();
+  if(!name){alert('ഭക്തന്റെ പേര് നൽകുക');return}
+  if(!cart.length){alert('കുറഞ്ഞത് ഒരു വഴിപാടെങ്കിലും തിരഞ്ഞെടുക്കുക');return}
+  
+  let bill={
+    id: Date.now(),
+    name,
+    star: document.getElementById('mainStar').value,
+    families: families.filter(f=>f.name),
+    items: cart.map(x=>({...x})),
+    total: total(),
+    time: firebase.firestore.FieldValue.serverTimestamp(),
+    staff: currentStaff||'സ്റ്റാഫ്'
+  };
+
+  try {
+    await db.collection('bills').add(bill);
+    showReceipt(bill);
+    cart=[]; families=[];
+    document.getElementById('mainName').value='';
+    document.getElementById('mainStar').value='';
+    document.getElementById('familyArea').innerHTML='';
+    document.getElementById('paid').value='';
+    renderCart();
+    toast('ബിൽ ക്ലൗഡിൽ സേവ് ചെയ്തു!');
+  } catch(e) {
+    alert('സേവ് ചെയ്യുന്നതിൽ പിശക്: '+e.message);
+  }
+}
+
+function listenBills(){
+  db.collection('bills').orderBy('time', 'desc').onSnapshot((snapshot)=>{
+    bills=[];
+    snapshot.forEach((doc)=>{
+      let data=doc.data();
+      if(data.time && data.time.toDate) data.time = data.time.toDate().toISOString();
+      bills.push(data);
+    });
+    renderHistory();
+    if(currentRole==='reports') renderReport();
+  });
+}
+
+function showReceipt(b){
+  let dt=b.time ? new Date(b.time).toLocaleString('ml-IN') : 'ഇപ്പോൾ';
+  document.getElementById('receiptHost').innerHTML=`<div class="receipt print-area"><h3>ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ്<br>ശ്രീ ഭഗവതിക്ഷേത്രം</h3><p>ബിൽ നമ്പർ: ${b.id}<br>തീയതി: ${dt}<br>പേര്: ${esc(b.name)}<br>നക്ഷത്രം: ${esc(b.star||'—')}</p>${b.families.map(f=>`<p>കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}<table>${b.items.map(x=>`<tr><td>${offerings[x.i][0]} × ${x.qty}</td><td align="right">₹${x.rate*x.qty}</td></tr>`).join('')}<tr><td><b>ആകെ</b></td><td align="right"><b>₹${b.total}</b></td></tr></table><p style="text-align:center">നന്ദി · വീണ്ടും വരിക</p><div class="print-tools no-print"><button class="btn" onclick="printContent('thermal')">Print</button></div></div>`;
+}
+
+function renderHistory(){
+  document.getElementById('historyList').innerHTML=bills.length?bills.map(b=>`<div class="report-row"><b>${esc(b.name)}</b> · ₹${b.total}<div class="muted">${b.time?new Date(b.time).toLocaleString('ml-IN'):''} · ${b.items.length} വഴിപാടുകൾ · സ്റ്റാഫ്: ${esc(b.staff||'')}</div></div>`).join(''):'ഇതുവരെ ബില്ലുകളില്ല';
+}
+
+let reportType='daily';
+function setReportType(t){reportType=t;renderReport()}
+
+function renderReport(){
+  let val=document.getElementById('reportDate').value||new Date().toISOString().slice(0,10),d=new Date(val+'T12:00:00');
+  let list=bills.filter(b=>{if(!b.time)return false;let x=new Date(b.time);return reportType==='daily'?x.toISOString().slice(0,10)===val:reportType==='monthly'?x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth():x.getFullYear()===d.getFullYear()});
+  let sum=list.reduce((s,b)=>s+b.total,0);
+  let title=reportType==='daily'?'ഡെയിലി റിപ്പോർട്ട്':reportType==='monthly'?'മാസ റിപ്പോർട്ട്':'വാർഷിക റിപ്പോർട്ട്';
+  document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`;
+}
+
+function printContent(mode){window.print();}
+
+function showPage(id){
+  if(!currentRole&&id!=='login')id='login';
+  ['billing','history','reports','login','admin'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));
+  if(id==='reports')renderReport();
+  if(id==='history')renderHistory();
+}
+
+async function demoLogin(){
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
+  
+  if(!LOGIN_EMAILS[u]){ alert('Username ശരിയല്ല'); return; }
+  if(!p){ alert('Password നൽകുക'); return; }
+  
+  const loginBtn = document.querySelector('#login button');
+  const status = document.getElementById('loginStatus');
+  
+  try {
+    if(loginBtn){ loginBtn.disabled = true; loginBtn.textContent = 'Checking...'; }
+    if(status) status.textContent = 'ഫയർബേസുമായി ബന്ധപ്പെടുന്നു...';
+    
+    let authPromise = auth.signInWithEmailAndPassword(LOGIN_EMAILS[u], p);
+    let timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('കണക്ഷൻ സമയം കഴിഞ്ഞു (Timeout). ഇന്റർനെറ്റ് പരിശോധിക്കുക.')), 10000));
+    
+    await Promise.race([authPromise, timeoutPromise]);
+    
+    currentRole = u;
+    currentStaff = u === 'billing' ? (prompt('സ്റ്റാഫിന്റെ പേര് നൽകുക', 'സ്റ്റാഫ്') || 'സ്റ്റാഫ്') : (u === 'admin' ? 'Admin' : 'Treasurer');
+    
+    document.getElementById('adminNav').classList.toggle('hidden', u !== 'admin');
+    toast('ലോഗിൻ വിജയിച്ചു!');
+    showPage(u === 'treasurer' ? 'reports' : 'billing');
+    listenBills();
+    if(status) status.textContent = 'ലോഗിൻ വിജയിച്ചു.';
+  } catch (error) {
+    console.error('Login error:', error);
+    if(status) status.textContent = 'പിശക്: ' + error.message;
+    alert('Login പിശക്: ' + error.message);
+  } finally {
+    if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = 'Login'; }
+  }
+}
+
+async function logout(){
+  try{await auth.signOut();}catch(e){}
+  currentRole=null; currentStaff='';
+  showPage('login');
+}
+
+function toast(s){let e=document.getElementById('toast');e.textContent=s;e.style.display='block';setTimeout(()=>e.style.display='none',2400)}
+
+renderOffers();
+renderCart();
+showPage('login');
+</script>
+</body>
+</html>
