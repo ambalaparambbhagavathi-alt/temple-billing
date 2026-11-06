@@ -196,17 +196,17 @@ async function demoLogin(){
      await auth.signOut(); throw new Error('ഈ അക്കൗണ്ട് Admin ആയി അംഗീകരിച്ചിട്ടില്ല.');
    }
    showStatus('അക്കൗണ്ടിന്റെ Role പരിശോധിക്കുന്നു...');
-   // Read the role document using the exact Firebase Auth UID.
-   const profileRef=db.collection('Users').doc(user.uid);
-   const profileSnap=await timeout(profileRef.get(),'Firestore Role പരിശോധന');
+   // Read the signed-in user's own role document from the exact Users/{UID} path.
+   const roleRef = db.collection('Users').doc(user.uid);
+   const profileSnap = await timeout(roleRef.get({source:'server'}),'Firestore Role പരിശോധന');
    if(!profileSnap.exists){
      await auth.signOut();
-     throw new Error('Firestore-ൽ Role രേഖ കണ്ടെത്തിയില്ല. പരിശോധിച്ച UID: '+user.uid+' | Collection: Users');
+     throw new Error('Firestore-ൽ Users/'+user.uid+' എന്ന രേഖ കണ്ടെത്തിയില്ല. Firebase Authentication-ലെ UID തന്നെയാണ് Document ID എന്ന് ഉറപ്പാക്കുക.');
    }
-   const savedRole=String((profileSnap.data()||{}).role||'').trim().toLowerCase();
-   if(savedRole!==u){
+   const savedRole = String((profileSnap.data()||{}).role||'').trim().toLowerCase();
+   if(savedRole !== u){
      await auth.signOut();
-     throw new Error('Role പൊരുത്തപ്പെടുന്നില്ല. ലോഗിൻ Username: '+u+' | Firestore role: '+(savedRole||'(ശൂന്യം)')+' | UID: '+user.uid);
+     throw new Error('Role പൊരുത്തപ്പെടുന്നില്ല. ഈ രേഖയിലെ role="'+(savedRole||'ഒഴിഞ്ഞത്')+'"; Login username="'+u+'".');
    }
    currentRole=u;
    if(u==='billing'){
