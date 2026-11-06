@@ -196,9 +196,17 @@ async function demoLogin(){
      await auth.signOut(); throw new Error('ഈ അക്കൗണ്ട് Admin ആയി അംഗീകരിച്ചിട്ടില്ല.');
    }
    showStatus('അക്കൗണ്ടിന്റെ Role പരിശോധിക്കുന്നു...');
-   const profileSnap=await timeout(db.collection('Users').doc(user.uid).get(),'Firestore Role പരിശോധന');
-   if(!profileSnap.exists || String(profileSnap.data().role||'').toLowerCase()!==u){
-     await auth.signOut(); throw new Error('ഈ അക്കൗണ്ടിന് ആവശ്യമായ role സജ്ജമാക്കിയിട്ടില്ല. Firestore users രേഖ പരിശോധിക്കുക.');
+   // Read the role document using the exact Firebase Auth UID.
+   const profileRef=db.collection('Users').doc(user.uid);
+   const profileSnap=await timeout(profileRef.get(),'Firestore Role പരിശോധന');
+   if(!profileSnap.exists){
+     await auth.signOut();
+     throw new Error('Firestore-ൽ Role രേഖ കണ്ടെത്തിയില്ല. പരിശോധിച്ച UID: '+user.uid+' | Collection: Users');
+   }
+   const savedRole=String((profileSnap.data()||{}).role||'').trim().toLowerCase();
+   if(savedRole!==u){
+     await auth.signOut();
+     throw new Error('Role പൊരുത്തപ്പെടുന്നില്ല. ലോഗിൻ Username: '+u+' | Firestore role: '+(savedRole||'(ശൂന്യം)')+' | UID: '+user.uid);
    }
    currentRole=u;
    if(u==='billing'){
