@@ -209,6 +209,7 @@ async function demoLogin(){
    if(u==='treasurer')reportType='monthly';
    toast(u==='admin'?'Admin ലോഗിൻ വിജയിച്ചു':u==='billing'?'Billing ലോഗിൻ വിജയിച്ചു':'Treasurer ലോഗിൻ വിജയിച്ചു');
    showPage(u==='treasurer'?'reports':'billing');
+   startCloudSync();
    showStatus('ലോഗിൻ വിജയിച്ചു.');
  }catch(error){
    console.error('Login error:',error);
@@ -220,6 +221,7 @@ async function demoLogin(){
  }
 }
 async function logout(){
+ stopCloudSync();
  try{if(auth.currentUser) await auth.signOut();}catch(e){console.error(e)}
  currentRole=null;currentStaff='';
  document.getElementById('password').value='';
