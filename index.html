@@ -248,14 +248,19 @@ async function demoLogin(){
      await auth.signOut(); throw new Error('ഈ അക്കൗണ്ട് Admin ആയി അംഗീകരിച്ചിട്ടില്ല.');
    }
    showStatus('അക്കൗണ്ടിന്റെ Role പരിശോധിക്കുന്നു...');
-   // Support either collection spelling used in existing Firestore projects.
-   let profileSnap=await timeout(db.collection('users').doc(user.uid).get(),'Firestore Role പരിശോധന');
-   if(!profileSnap.exists){
-     profileSnap=await timeout(db.collection('Users').doc(user.uid).get(),'Firestore Role പരിശോധന');
-   }
-   const savedRole=profileSnap.exists?String(profileSnap.data().role||'').trim().toLowerCase():'';
-   if(!profileSnap.exists || savedRole!==u){
-     await auth.signOut(); throw new Error('ഈ അക്കൗണ്ടിന്റെ Role രേഖ കണ്ടെത്തിയില്ല / പൊരുത്തപ്പെടുന്നില്ല. Firestore-ൽ users അല്ലെങ്കിൽ Users collection-ൽ ഇതേ UID-ക്ക് role: '+u+' എന്ന String field വേണം.');
+   // Admin is authenticated by Firebase and additionally restricted to the
+   // fixed, approved Admin UID above. Do not block this verified Admin on a
+   // duplicate Firestore role-profile lookup.
+   // Billing and Treasurer must still have their matching Firestore role.
+   if(u!=='admin'){
+     let profileSnap=await timeout(db.collection('users').doc(user.uid).get(),'Firestore Role പരിശോധന');
+     if(!profileSnap.exists){
+       profileSnap=await timeout(db.collection('Users').doc(user.uid).get(),'Firestore Role പരിശോധന');
+     }
+     const savedRole=profileSnap.exists?String(profileSnap.data().role||'').trim().toLowerCase():'';
+     if(!profileSnap.exists || savedRole!==u){
+       await auth.signOut(); throw new Error('ഈ അക്കൗണ്ടിന്റെ Role രേഖ കണ്ടെത്തിയില്ല / പൊരുത്തപ്പെടുന്നില്ല. Firestore-ൽ users അല്ലെങ്കിൽ Users collection-ൽ ഇതേ UID-ക്ക് role: '+u+' എന്ന String field വേണം.');
+     }
    }
    currentRole=u;
    if(u==='billing'){
