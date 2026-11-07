@@ -2,48 +2,145 @@
 <html lang="ml">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം — Billing Test</title>
+<title>ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം — Billing System</title>
 <style>
 :root{--orange:#d97706;--deep:#9a3412;--cream:#fff8ed;--line:#ead9c4;--ink:#33251b;--muted:#806f60;--green:#18794e}*{box-sizing:border-box}body{margin:0;background:#f5eee4;color:var(--ink);font-family:system-ui,"Noto Sans Malayalam",sans-serif}.top{background:linear-gradient(120deg,#9a3412,#e28a20);color:white;padding:18px 16px;box-shadow:0 3px 12px #0002}.brand{font-weight:800;font-size:19px}.sub{font-size:12px;opacity:.9;margin-top:4px}.nav{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.nav button{border:1px solid #ffffff88;background:#ffffff20;color:white;padding:8px 13px;border-radius:9px}.wrap{max-width:1100px;margin:18px auto;padding:0 14px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#fffdf9;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 4px 14px #4b2d1410}.panel h2{font-size:17px;margin:0 0 13px;color:var(--deep)}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}.field label{font-size:13px;color:var(--muted);font-weight:650}input,select{width:100%;border:1px solid #ddcbb7;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--orange);color:white;font-weight:700;cursor:pointer}.btn.secondary{background:#f6e8d5;color:#87420e;border:1px solid #e8cba8}.btn.dark{background:#5b4635}.btn.small{padding:7px 10px;font-size:12px}.muted{color:var(--muted);font-size:12px}.search{margin:10px 0}.offering-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:390px;overflow:auto;padding:2px}.offer{border:1px solid var(--line);border-radius:10px;padding:10px;text-align:left;background:#fffaf2;cursor:pointer;color:var(--ink)}.offer b{display:block;font-size:13px}.offer span{font-size:12px;color:var(--deep)}.offer:active{background:#ffedcf}.cart-item{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid #eee0d0}.cart-item small{display:block;color:var(--muted)}.qty{display:flex;align-items:center;gap:5px}.qty button{border:1px solid var(--line);background:#fff3e1;border-radius:6px;padding:3px 8px}.total{display:flex;justify-content:space-between;font-weight:800;font-size:19px;padding:13px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.family{border:1px dashed #d6a66f;border-radius:10px;padding:12px;margin:10px 0;background:#fffaf3}.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2d241d;color:white;padding:10px 16px;border-radius:10px;display:none;z-index:10}.print-tools{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.print-tools select{max-width:130px}.print-area{background:white;color:#111;padding:16px}.receipt{background:white;color:#111;padding:18px;max-width:380px;margin:15px auto;border:1px dashed #aaa}.receipt h3{text-align:center}.receipt table{width:100%;border-collapse:collapse;font-size:13px}.receipt td{padding:5px 0;border-bottom:1px solid #ddd}.report-row{padding:9px 0;border-bottom:1px solid var(--line)}.login-screen{max-width:420px;margin:40px auto}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:600px){.admin-grid{grid-template-columns:1fr}}@media(max-width:760px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr 1fr}}@media print{body *{visibility:hidden!important}.print-area,.print-area *{visibility:visible!important}.print-area{position:absolute;left:0;top:0;width:100%;border:0!important;margin:0!important;padding:4mm!important;box-shadow:none!important}.print-area button,.no-print{display:none!important}body.print-thermal .print-area{width:var(--thermal-width,80mm)!important;max-width:var(--thermal-width,80mm)!important;font-size:11px!important}body.print-normal .print-area{width:100%!important;max-width:none!important;font-size:12px!important}}
-</style><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<header class="top"><div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div><div class="sub">ബില്ലിംഗ് സംവിധാനം · Offline & Cloud Sync</div><div class="nav"><button id="navBilling" onclick="showPage('billing')">Billing</button><button id="navHistory" onclick="showPage('history')">ബിൽ ചരിത്രം</button><button id="navReports" onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button><button id="adminNav" class="hidden" onclick="showPage('admin')">Admin Page</button><button onclick="logout()">Logout</button></div></header>
-<main id="billing" class="wrap hidden">
-<section class="panel"><h2>ഭക്തന്റെ വിവരങ്ങൾ</h2><div class="row"><div class="field"><label>ഭക്തന്റെ പേര്</label><input id="mainName" placeholder="പേര് നൽകുക"></div><div class="field"><label>നക്ഷത്രം</label><select id="mainStar"></select></div></div>
-<button class="btn secondary small" onclick="addFamily()">＋ കൂടുതൽ പേര് ചേർക്കുക</button><div id="familyArea"></div><div id="vehicleNumberWrap" class="field hidden"><label>വാഹന രജിസ്ട്രേഷൻ നമ്പർ</label><input id="vehicleNumber" placeholder="ഉദാ: KL 11 AB 1234" autocomplete="off"></div><div id="customFieldsArea"></div>
-<h2 style="margin-top:18px">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക</h2><input class="search" id="search" placeholder="മലയാളം / English വഴി തിരയുക…" oninput="renderOffers()"><div class="offering-grid" id="offers"></div>
-</section>
-<section class="panel"><h2>വഴിപാട് ബിൽ</h2><div id="cart"><div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div></div><div class="total"><span>ആകെ തുക</span><span id="grand">₹0</span></div>
-<div class="actions"><button class="btn secondary" onclick="toggleCalc()">🧮 കാൽക്കുലേറ്റർ</button><button class="btn" onclick="saveBill()">ബിൽ സേവ് ചെയ്യുക</button></div>
-<div id="calc" class="family hidden"><b>പണം കണക്കാക്കുക</b><div class="field" style="margin-top:8px"><label>ബിൽ തുക</label><input id="calcBill" readonly></div><div class="field"><label>ഭക്തൻ നൽകിയ പണം</label><input id="paid" type="number" min="0" placeholder="തുക" oninput="calcChange()"></div><div class="total"><span>തിരികെ നൽകേണ്ടത്</span><span id="change">₹0</span></div></div>
-<div id="saveMsg" class="muted" style="margin-top:10px">ഓഫ്‌ലൈൻ ആയാലും ബിൽ സേവ് ചെയ്യപ്പെടും. നെറ്റ് ലഭിക്കുമ്പോൾ ഓട്ടോമാറ്റിക് ആയി സിങ്ക് ആകും.</div>
-</section></main>
-<section id="history" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>ബിൽ ചരിത്രം</h2><div id="historyList"></div></section>
-<section id="reports" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>റിപ്പോർട്ടുകൾ</h2><div class="actions no-print"><button class="btn secondary" onclick="setReportType('daily')">ഡെയിലി</button><button class="btn secondary" onclick="setReportType('monthly')">മാസം</button><button class="btn secondary" onclick="setReportType('yearly')">വർഷം</button></div><div class="row no-print"><div class="field"><label>തീയതി</label><input type="date" id="reportDate" onchange="renderReport()"></div></div><div id="reportData" class="print-area"></div><div class="print-tools no-print"><button class="btn secondary" onclick="printContent('normal')">A4 സാധാരണ Printer</button><button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button></div><p class="muted no-print">A4 പ്രിന്ററിലേക്ക് Wi-Fi / Bluetooth / USB വഴി ഉപകരണം കണക്ട് ചെയ്ത് പ്രിന്റ് ഡയലോഗിൽ പ്രിന്റർ തിരഞ്ഞെടുക്കുക. PDF ഓപ്ഷനിൽ “Save as PDF” തിരഞ്ഞെടുക്കുക.</p></section>
-<section id="login" class="panel login-screen"><h2>ലോഗിൻ</h2><div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div><button class="btn" onclick="demoLogin()">Login</button><p id="loginStatus" class="muted" role="status" aria-live="polite"></p><p class="muted">ഓഫ്‌ലൈൻ മോഡിലും ഈ അക്കൗണ്ട് വഴി ലോഗിൻ ചെയ്ത് ബില്ലുകൾ ചെയ്യാം.</p></section>
-<section id="admin" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>Admin Page · അഡ്മിൻ നിയന്ത്രണം</h2><p class="muted">ഈ ടെസ്റ്റ് പതിപ്പിൽ മാറ്റങ്ങൾ ഈ ഉപകരണത്തിൽ മാത്രം സേവ് ചെയ്യും.</p><p class="muted">Billing, Treasurer, Admin Username/Password എന്നിവ Firebase Authentication-ൽ നിയന്ത്രിക്കുന്നു. ഈ പേജിൽ പാസ്‌വേഡുകൾ സൂക്ഷിക്കില്ല.</p><div class="field"><label>ബില്ലിംഗ് സ്റ്റാഫ് പേരുകൾ (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStaff" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div><div class="field"><label><input id="cfgNormalReceipt" type="checkbox" style="width:auto"> രസീതിന് A4 സാധാരണ Printer ഓപ്ഷൻ Enable ചെയ്യുക</label></div><button class="btn" onclick="saveAdminSettings()">മാറ്റങ്ങൾ സേവ് ചെയ്യുക</button><p class="muted">പ്രിന്റർ കണക്ഷൻ: Wi-Fi / Bluetooth / USB വഴി കണക്ട് ചെയ്ത പ്രിന്റർ ഉപകരണത്തിന്റെ പ്രിന്റ് സംവിധാനത്തിൽ ലഭ്യമാകണം.</p><p id="adminMsg" class="muted"></p><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><h2>വഴിപാട് നിരക്കുകൾ</h2><p class="muted">നിരക്ക് മാറ്റാൻ വഴിപാടിന്റെ പേര് തിരഞ്ഞെടുത്ത് പുതിയ നിരക്ക് നൽകുക.</p><div class="row"><div class="field"><label>വഴിപാട്</label><select id="cfgOffer"></select></div><div class="field"><label>പുതിയ നിരക്ക് (₹)</label><input id="cfgRate" type="number" min="0"></div></div><button class="btn secondary" onclick="saveOfferRate()">നിരക്ക് അപ്ഡേറ്റ് ചെയ്യുക</button>
-<hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><h2>മുഴുവൻ ആപ്പ് കസ്റ്റമൈസേഷൻ</h2>
-<div class="admin-grid">
-<div class="field"><label>ക്ഷേത്രത്തിന്റെ പേര്</label><input id="cfgTempleName"></div><div class="field"><label>മുകളിലെ ഉപശീർഷകം</label><input id="cfgSubtitle"></div>
-<div class="field"><label>ക്ഷേത്ര വിലാസം</label><input id="cfgAddress"></div><div class="field"><label>ഫോൺ / ബന്ധപ്പെടാനുള്ള വിവരം</label><input id="cfgPhone"></div>
-<div class="field"><label>രസീത് തലക്കെട്ട്</label><input id="cfgReceiptHeading"></div><div class="field"><label>രസീതിലെ നന്ദി സന്ദേശം</label><input id="cfgReceiptThanks"></div>
-<div class="field"><label>ഡെയിലി റിപ്പോർട്ട് പേര്</label><input id="cfgReportDaily"></div><div class="field"><label>മാസ റിപ്പോർട്ട് പേര്</label><input id="cfgReportMonthly"></div><div class="field"><label>വാർഷിക റിപ്പോർട്ട് പേര്</label><input id="cfgReportYearly"></div>
-<div class="field"><label>പ്രധാന നിറം</label><input id="cfgOrange" type="color"></div><div class="field"><label>തലക്കെട്ടിന്റെ നിറം</label><input id="cfgDeep" type="color"></div><div class="field"><label>പശ്ചാത്തല നിറം</label><input id="cfgCream" type="color"></div>
-<div class="field"><label>Thermal പേപ്പർ വീതി</label><select id="cfgThermalWidth"><option>58mm</option><option>80mm</option></select></div><div class="field"><label>റിപ്പോർട്ട് ഇമെയിൽ വിലാസം</label><input id="cfgEmail"></div><div class="field"><label>WhatsApp ഗ്രൂപ്പ് ലിങ്ക്</label><input id="cfgWhatsapp"></div>
-</div>
-<div class="field"><label>നക്ഷത്രങ്ങളുടെ പട്ടിക (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStars" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div>
-<div class="field"><label>അധിക ഭക്ത വിവര ഫീൽഡുകൾ (ഓരോ വരിയിലും ഒന്ന്; ഉദാ: മൊബൈൽ നമ്പർ, വിലാസം)</label><textarea id="cfgCustomFields" rows="3" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div>
-<div class="actions"><label><input id="cfgThermalEnabled" type="checkbox" style="width:auto"> Thermal രസീത് പ്രിന്റിംഗ്</label><label><input id="cfgNormalEnabled" type="checkbox" style="width:auto"> സാധാരണ A4 പ്രിന്റിംഗ്</label><label><input id="cfgPdfEnabled" type="checkbox" style="width:auto"> PDF സേവ്</label></div>
-<h2 style="margin-top:18px">വഴിപാട് മാനേജ്മെന്റ്</h2><div class="admin-grid"><div class="field"><label>പുതിയ വഴിപാടിന്റെ മലയാളം പേര്</label><input id="newOfferMl"></div><div class="field"><label>English പേര്</label><input id="newOfferEn"></div><div class="field"><label>നിരക്ക് (₹; മാറ്റാവുന്ന നിരക്കിന് ഒഴിച്ചിടുക)</label><input id="newOfferRate" type="number" min="0"></div></div><div class="actions"><button class="btn secondary" onclick="addNewOffering()">വഴിപാട് ചേർക്കുക</button><button class="btn secondary" onclick="deleteSelectedOffering()">തിരഞ്ഞെടുത്ത വഴിപാട് നീക്കുക</button></div>
-<p class="muted">എല്ലാ രസീതുകളിലും created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി എന്ന ചെറിയ മങ്ങിയ ക്രെഡിറ്റ് സ്വയം പ്രിന്റ് ചെയ്യും.</p>
-</section>
-<div id="receiptHost"></div><div class="toast" id="toast"></div>
-<script>
+<header class="top">
+  <div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div>
+  <div class="sub">ബില്ലിംഗ് സംവിധാനം · Offline & Cloud Sync</div>
+  <div class="nav">
+    <button id="navBilling" onclick="showPage('billing')">Billing</button>
+    <button id="navHistory" onclick="showPage('history')">ബിൽ ചരിത്രം</button>
+    <button id="navReports" onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button>
+    <button id="adminNav" class="hidden" onclick="showPage('admin')">Admin Page</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+</header>
 
-// Firebase Authentication + Firestore role profile with offline support
+<main id="billing" class="wrap hidden">
+<section class="panel">
+  <h2>ഭക്തന്റെ വിവരങ്ങൾ</h2>
+  <div class="row">
+    <div class="field"><label>ഭക്തന്റെ പേര്</label><input id="mainName" placeholder="പേര് നൽകുക"></div>
+    <div class="field"><label>നക്ഷത്രം</label><select id="mainStar"></select></div>
+  </div>
+  <button class="btn secondary small" onclick="addFamily()">＋ കൂടുതൽ പേര് ചേർക്കുക</button>
+  <div id="familyArea"></div>
+  <div id="vehicleNumberWrap" class="field hidden"><label>വാഹന രജിസ്ട്രേഷൻ നമ്പർ</label><input id="vehicleNumber" placeholder="ഉദാ: KL 11 AB 1234" autocomplete="off"></div>
+  <div id="customFieldsArea"></div>
+  <h2 style="margin-top:18px">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക</h2>
+  <input class="search" id="search" placeholder="മലയാളം / English വഴി തിരയുക…" oninput="renderOffers()">
+  <div class="offering-grid" id="offers"></div>
+</section>
+
+<section class="panel">
+  <h2>വഴിപാട് ബിൽ</h2>
+  <div id="cart"><div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div></div>
+  <div class="total"><span>ആകെ തുക</span><span id="grand">₹0</span></div>
+  <div class="actions">
+    <button class="btn secondary" onclick="toggleCalc()">🧮 കാൽക്കുലേറ്റർ</button>
+    <button class="btn" onclick="saveBill()">ബിൽ സേവ് ചെയ്യുക</button>
+  </div>
+  <div id="calc" class="family hidden">
+    <b>പണം കണക്കാക്കുക</b>
+    <div class="field" style="margin-top:8px"><label>ബിൽ തുക</label><input id="calcBill" readonly></div>
+    <div class="field"><label>ഭക്തൻ നൽകിയ പണം</label><input id="paid" type="number" min="0" placeholder="തുക" oninput="calcChange()"></div>
+    <div class="total"><span>തിരികെ നൽകേണ്ടത്</span><span id="change">₹0</span></div>
+  </div>
+  <div id="saveMsg" class="muted" style="margin-top:10px">ഓഫ്‌ലൈൻ ആയാലും ബിൽ സേവ് ചെയ്യപ്പെടും. നെറ്റ് ലഭിക്കുമ്പോൾ ഓട്ടോമാറ്റിക് ആയി സിങ്ക് ആകും.</div>
+</section>
+</main>
+
+<section id="history" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px">
+  <h2>ബിൽ ചരിത്രം</h2>
+  <div id="historyList"></div>
+</section>
+
+<section id="reports" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px">
+  <h2>റിപ്പോർട്ടുകൾ</h2>
+  <div class="actions no-print">
+    <button class="btn secondary" onclick="setReportType('daily')">ഡെയിലി</button>
+    <button class="btn secondary" onclick="setReportType('monthly')">മാസം</button>
+    <button class="btn secondary" onclick="setReportType('yearly')">വർഷം</button>
+  </div>
+  <div class="row no-print">
+    <div class="field"><label>തീയതി</label><input type="date" id="reportDate" onchange="renderReport()"></div>
+  </div>
+  <div id="reportData" class="print-area"></div>
+  <div class="print-tools no-print">
+    <button class="btn secondary" onclick="printContent('normal')">A4 സാധാരണ Printer</button>
+    <button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button>
+  </div>
+</section>
+
+<section id="login" class="panel login-screen">
+  <h2>ലോഗിൻ</h2>
+  <div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div>
+  <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div>
+  <button class="btn" onclick="demoLogin()">Login</button>
+  <p id="loginStatus" class="muted" role="status" aria-live="polite"></p>
+</section>
+
+<section id="admin" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px">
+  <h2>Admin Page · അഡ്മിൻ നിയന്ത്രണം</h2>
+  <div class="field"><label>ബില്ലിംഗ് സ്റ്റാഫ് പേരുകൾ (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStaff" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div>
+  <div class="field"><label><input id="cfgNormalReceipt" type="checkbox" style="width:auto"> രസീതിന് A4 സാധാരണ Printer ഓപ്ഷൻ Enable ചെയ്യുക</label></div>
+  <button class="btn" onclick="saveAdminSettings()">മാറ്റങ്ങൾ സേവ് ചെയ്യുക</button>
+  <p id="adminMsg" class="muted"></p>
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <h2>വഴിപാട് നിരക്കുകൾ</h2>
+  <div class="row">
+    <div class="field"><label>വഴിപാട്</label><select id="cfgOffer"></select></div>
+    <div class="field"><label>പുതിയ നിരക്ക് (₹)</label><input id="cfgRate" type="number" min="0"></div>
+  </div>
+  <button class="btn secondary" onclick="saveOfferRate()">നിരക്ക് അപ്ഡേറ്റ് ചെയ്യുക</button>
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <h2>ആപ്പ് കസ്റ്റമൈസേഷൻ</h2>
+  <div class="admin-grid">
+    <div class="field"><label>ക്ഷേത്രത്തിന്റെ പേര്</label><input id="cfgTempleName"></div>
+    <div class="field"><label>മുകളിലെ ഉപശീർഷകം</label><input id="cfgSubtitle"></div>
+    <div class="field"><label>ക്ഷേത്ര വിലാസം</label><input id="cfgAddress"></div>
+    <div class="field"><label>ഫോൺ</label><input id="cfgPhone"></div>
+    <div class="field"><label>രസീത് തലക്കെട്ട്</label><input id="cfgReceiptHeading"></div>
+    <div class="field"><label>നന്ദി സന്ദേശം</label><input id="cfgReceiptThanks"></div>
+    <div class="field"><label>ഡെയിലി റിപ്പോർട്ട് പേര്</label><input id="cfgReportDaily"></div>
+    <div class="field"><label>മാസ റിപ്പോർട്ട് പേര്</label><input id="cfgReportMonthly"></div>
+    <div class="field"><label>വാർഷിക റിപ്പോർട്ട് പേര്</label><input id="cfgReportYearly"></div>
+    <div class="field"><label>പ്രധാന നിറം</label><input id="cfgOrange" type="color"></div>
+    <div class="field"><label>തലക്കെട്ടിന്റെ നിറം</label><input id="cfgDeep" type="color"></div>
+    <div class="field"><label>പശ്ചാത്തല നിറം</label><input id="cfgCream" type="color"></div>
+    <div class="field"><label>Thermal പേപ്പർ വീതി</label><select id="cfgThermalWidth"><option>58mm</option><option>80mm</option></select></div>
+  </div>
+  <div class="field"><label>നക്ഷത്രങ്ങളുടെ പട്ടിക (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStars" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div>
+  <div class="field"><label>അധിക ഭക്ത വിവര ഫീൽഡുകൾ (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgCustomFields" rows="3" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div>
+  <div class="actions">
+    <label><input id="cfgThermalEnabled" type="checkbox" style="width:auto"> Thermal പ്രിന്റിംഗ്</label>
+    <label><input id="cfgNormalEnabled" type="checkbox" style="width:auto"> A4 പ്രിന്റിംഗ്</label>
+    <label><input id="cfgPdfEnabled" type="checkbox" style="width:auto"> PDF സേവ്</label>
+  </div>
+  <h2 style="margin-top:18px">വഴിപാട് മാനേജ്മെന്റ്</h2>
+  <div class="admin-grid">
+    <div class="field"><label>മലയാളം പേര്</label><input id="newOfferMl"></div>
+    <div class="field"><label>English പേര്</label><input id="newOfferEn"></div>
+    <div class="field"><label>നിരക്ക് (₹)</label><input id="newOfferRate" type="number" min="0"></div>
+  </div>
+  <div class="actions">
+    <button class="btn secondary" onclick="addNewOffering()">വഴിപാട് ചേർക്കുക</button>
+    <button class="btn secondary" onclick="deleteSelectedOffering()">തിരഞ്ഞെടുത്തത് നീക്കുക</button>
+  </div>
+  <p class="muted">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p>
+</section>
+
+<div id="receiptHost"></div>
+<div class="toast" id="toast"></div>
+
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyBtS-s9a2D2Ew8DJe7fU-DdQpY1X6rQt1I",
   authDomain: "bhoomivathukkal-temple.firebaseapp.com",
@@ -57,19 +154,15 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Enable Firestore offline persistence & automatic multi-tab sync
-try { 
-  db.enablePersistence({synchronizeTabs:true}).catch(e => console.warn('Offline cache:', e.code || e)); 
-} catch(e) {}
+try { db.enablePersistence({synchronizeTabs:true}).catch(e => console.warn('Offline cache:', e.code || e)); } catch(e) {}
 
 const TEMPLE_PATH = 'temples/bhoomivathukkal';
 const cloudBills = () => db.collection(TEMPLE_PATH + '/bills');
 const cloudSettings = () => db.doc(TEMPLE_PATH + '/config/settings');
 const cloudOfferings = () => db.doc(TEMPLE_PATH + '/config/offerings');
 let cloudUnsubs = [];
-let cloudReady = false;
 
-function stopCloudSync(){ cloudUnsubs.forEach(fn=>{try{fn()}catch(e){}}); cloudUnsubs=[]; cloudReady=false; }
+function stopCloudSync(){ cloudUnsubs.forEach(fn=>{try{fn()}catch(e){}}); cloudUnsubs=[]; }
 function saveLocalCache(){
   localStorage.setItem('temple_test_bills', JSON.stringify(bills));
   localStorage.setItem('temple_test_settings', JSON.stringify(settings));
@@ -87,37 +180,27 @@ function startCloudSync(){
     localStorage.setItem('temple_test_bills',JSON.stringify(bills));
     renderHistory();
     if(!document.getElementById('reports').classList.contains('hidden')) renderReport();
-    cloudReady=true;
-  },err=>{console.error('Bills sync:',err);toast('ഓഫ്‌ലൈൻ മോഡ്: ലോക്കൽ ഡാറ്റ ഉപയോഗിക്കുന്നു');}));
+  },err=>toast('ഓഫ്‌ലൈൻ മോഡ്')));
   
   cloudUnsubs.push(cloudSettings().onSnapshot(snap=>{
-    if(snap.exists && role!=='billing'){
+    if(snap.exists){
       settings={...settings,...snap.data()};
       saveLocalCache(); applyCustomization();renderCustomFields();
       if(!document.getElementById('admin').classList.contains('hidden')) loadAdminSettings();
-    } else if(snap.exists && role==='billing') {
-      settings={...settings,...snap.data()}; saveLocalCache(); applyCustomization();renderCustomFields();
     }
-  },err=>console.warn('Settings sync:',err)));
+  }));
   
   cloudUnsubs.push(cloudOfferings().onSnapshot(snap=>{
     if(snap.exists && Array.isArray(snap.data().items)){
-      const remote=snap.data().items;
-      offerings.splice(0,offerings.length,...remote);
+      offerings.splice(0,offerings.length,...snap.data().items);
       saveLocalCache(); renderOffers();
       if(!document.getElementById('admin').classList.contains('hidden')) loadAdminSettings();
     }
-  },err=>console.warn('Offerings sync:',err)));
+  }));
 }
 
-async function pushCloudSettings(){
-  if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudSettings().set(settings);
-}
-async function pushCloudOfferings(){
-  if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudOfferings().set({items:offerings});
-}
+async function pushCloudSettings(){ if(currentRole==='admin' && auth.currentUser) await cloudSettings().set(settings); }
+async function pushCloudOfferings(){ if(currentRole==='admin' && auth.currentUser) await cloudOfferings().set({items:offerings}); }
 
 const LOGIN_EMAILS = {
   admin: "akhileshashok32@gmail.com",
@@ -129,7 +212,7 @@ const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക
 const stars=['അശ്വതി','ഭരണി','കാർത്തിക','രോഹിണി','മകയിരം','തിരുവാതിര','പുണർതം','പൂയം','ആയില്യം','മകം','പൂരം','ഉത്രം','അത്തം','ചിത്തിര','ചോതി','വിശാഖം','അനിഴം','തൃക്കേട്ട','മൂലം','പൂരാടം','ഉത്രാടം','തിരുവോണം','അവിട്ടം','ചതയം','പൂരുരുട്ടാതി','ഉത്രട്ടാതി','രേവതി'];
 
 let cart=[],families=[],bills=[],currentRole=null,currentStaff='';
-let settings={billUser:'billing',billPass:'demo123',adminUser:'admin',adminPass:'admin123',staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',logoText:'',adminNotes:''};
+let settings={staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:''};
 
 try{
   settings={...settings,...JSON.parse(localStorage.getItem('temple_test_settings')||'{}')};
@@ -141,8 +224,7 @@ try{
   if(savedOffers&&savedOffers.length===offerings.length)savedOffers.forEach((o,i)=>offerings[i][2]=o[2]);
 }catch(e){}
 
-const starOpts=stars.map(s=>`<option>${s}</option>`).join('');
-document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;
+document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+stars.map(s=>`<option>${s}</option>`).join('');
 document.getElementById('reportDate').value=new Date().toISOString().slice(0,10);
 
 function renderOffers(){
@@ -167,7 +249,7 @@ function changeQty(k,d){cart[k].qty+=d;if(cart[k].qty<=0)cart.splice(k,1);render
 function removeItem(k){cart.splice(k,1);renderCart()}
 function addFamily(){families.push({name:'',star:''});renderFamilies()}
 function renderFamilies(){
-  document.getElementById('familyArea').innerHTML=families.map((f,i)=>`<div class="family"><div class="actions" style="justify-content:space-between"><b>കുടുംബാംഗം ${i+1}</b><button class="btn small secondary" onclick="removeFamily(${i})">നീക്കുക</button></div><div class="row"><div class="field"><label>പേര്</label><input value="${esc(f.name)}" onchange="families[${i}].name=this.value" placeholder="പേര്"></div><div class="field"><label>നക്ഷത്രം</label><select onchange="families[${i}].star=this.value"><option value="">തിരഞ്ഞെടുക്കുക</option>${stars.map(s=>`<option ${f.star===s?'selected':''}>${s}</option>`).join('')}</select></div></div><div class="muted">കുടുംബാംഗങ്ങളുടെ വഴിപാടുകൾ ഇപ്പോൾ ഒരേ ബില്ലിലെ പൊതുവായ പട്ടികയിൽ ചേർക്കുന്നു.</div></div>`).join('');
+  document.getElementById('familyArea').innerHTML=families.map((f,i)=>`<div class="family"><div class="actions" style="justify-content:space-between"><b>കുടുംബാംഗം ${i+1}</b><button class="btn small secondary" onclick="removeFamily(${i})">നീക്കുക</button></div><div class="row"><div class="field"><label>പേര്</label><input value="${esc(f.name)}" onchange="families[${i}].name=this.value" placeholder="പേര്"></div><div class="field"><label>നക്ഷത്രം</label><select onchange="families[${i}].star=this.value"><option value="">തിരഞ്ഞെടുക്കുക</option>${stars.map(s=>`<option ${f.star===s?'selected':''}>${s}</option>`).join('')}</select></div></div></div>`).join('');
 }
 function removeFamily(i){families.splice(i,1);renderFamilies()}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -208,7 +290,6 @@ async function saveBill(){
  };
 
  try{
-   // Try atomic transaction if online, else fallback offline save
    try {
      await db.runTransaction(async tx=>{
        const refs=[];
@@ -225,8 +306,6 @@ async function saveBill(){
        tx.set(billRef,bill);
      });
    } catch(err) {
-     console.warn('Offline transaction queued:', err);
-     // Fallback offline token allocation & local write
      const offlineTokenNum = Math.floor(Math.random() * 900) + 100;
      if(hasVehicle) bill.vehicleToken = 'V' + offlineTokenNum;
      if(hasEzhuth) bill.ezhuthToken = 'E' + offlineTokenNum;
@@ -241,48 +320,59 @@ async function saveBill(){
    document.getElementById('familyArea').innerHTML=''; document.getElementById('paid').value='';
    const vn=document.getElementById('vehicleNumber'); if(vn)vn.value='';
    renderCustomFields(); renderCart(); renderHistory();
-   toast('ബിൽ വിജയകരമായി സേവ് ചെയ്തു! (ഓട്ടോ സിങ്ക് ആകും)');
+   toast('ബിൽ സേവ് ചെയ്തു!');
  }catch(e){
-   console.error('Bill save error:',e);
    alert('ബിൽ സേവ് ചെയ്യുന്നതിൽ പിശക്: '+(e.message||e));
  }
 }
 
+// -------------------------------------------------------------
+// മേൽശാന്തിക്ക് എളുപ്പത്തിൽ വായിക്കാനായി വലിയ ബോൾഡ് ഫോണ്ടിലുള്ള രസീത് ഡിസൈൻ
+// -------------------------------------------------------------
 function showReceipt(b){
  let dt=new Date(b.time).toLocaleString('ml-IN');
- const temple=esc(settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം');
- const itemRows=(b.items||[]).map(x=>`<tr><td style="font-size:15px;font-weight:700;">${esc(x.itemName||offerings[x.i]?.[0]||'വഴിപാട്')} × ${x.qty}</td><td align="right" style="font-size:15px;font-weight:700;">₹${x.rate*x.qty}</td></tr>`).join('');
+ let temple=esc(settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം');
+ 
+ let itemRows=(b.items||[]).map(x=>`
+   <tr>
+     <td style="font-size:18px;font-weight:900;padding:6px 0;color:#000;">${esc(x.itemName||offerings[x.i]?.[0]||'വഴിപാട്')} × ${x.qty}</td>
+     <td align="right" style="font-size:18px;font-weight:900;padding:6px 0;color:#000;">₹${x.rate*x.qty}</td>
+   </tr>
+ `).join('');
  
  document.getElementById('receiptHost').innerHTML=`
- <div class="receipt print-area">
-   <h3>${temple}</h3>
-   ${settings.address?`<p style="text-align:center">${esc(settings.address)}</p>`:''}
-   ${settings.phone?`<p style="text-align:center">ഫോൺ: ${esc(settings.phone)}</p>`:''}
-   <p style="text-align:center"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></p>
-   <hr style="border:0;border-top:1px dashed #9a3412;margin:10px 0;">
+ <div class="receipt print-area" style="width:100%;max-width:400px;margin:auto;background:#fff;padding:20px;color:#000;">
+   <h3 style="font-size:20px;text-align:center;margin-bottom:5px;">${temple}</h3>
+   ${settings.address?`<p style="text-align:center;font-size:12px;margin:2px 0;">${esc(settings.address)}</p>`:''}
+   ${settings.phone?`<p style="text-align:center;font-size:12px;margin:2px 0;">ഫോൺ: ${esc(settings.phone)}</p>`:''}
+   <p style="text-align:center;font-size:14px;font-weight:bold;margin:8px 0;"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></p>
+   <hr style="border:0;border-top:2px dashed #333;margin:10px 0;">
    
-   <!-- മേൽശാന്തിക്ക് പെട്ടെന്ന് കാണാൻ വലിയ ഫോണ്ടിൽ പേരും നക്ഷത്രവും വഴിപാടുകളും -->
-   <div style="background:#fff3e1;padding:12px;border-radius:8px;border:2px solid #d97706;margin:10px 0;">
-     <div style="font-size:13px;color:#806f60;margin-bottom:2px;font-weight:600;">ഭക്തന്റെ വിവരങ്ങൾ (മേൽശാന്തിക്ക്):</div>
-     <div style="font-size:20px;font-weight:900;color:#9a3412;line-height:1.3;">പേര്: ${esc(b.name)}</div>
-     <div style="font-size:16px;font-weight:800;color:#33251b;margin-top:4px;">നക്ഷത്രം: ${esc(b.star||'—')}</div>
-     ${b.vehicleNumber?`<div style="font-size:14px;font-weight:700;color:#18794e;margin-top:4px;">വാഹന നമ്പർ: ${esc(b.vehicleNumber)}</div>`:''}
-     ${b.vehicleToken?`<div style="font-size:15px;font-weight:800;color:#18794e;margin-top:2px;">വാഹനപൂജ ടോക്കൺ: <b>${esc(b.vehicleToken)}</b></div>`:''}
-     ${b.ezhuthToken?`<div style="font-size:15px;font-weight:800;color:#18794e;margin-top:2px;">എഴുത്തിനിരുത്ത് ടോക്കൺ: <b>${esc(b.ezhuthToken)}</b></div>`:''}
+   <div style="background:#fff3cd;padding:15px;border-radius:8px;border:3px solid #d97706;margin:12px 0;">
+     <div style="font-size:12px;color:#856404;font-weight:bold;text-transform:uppercase;margin-bottom:4px;">മേൽശാന്തിക്കുള്ള വഴിപാട് വിവരങ്ങൾ:</div>
+     <div style="font-size:22px;font-weight:900;color:#9a3412;line-height:1.4;">പേര്: ${esc(b.name)}</div>
+     <div style="font-size:18px;font-weight:800;color:#111;margin-top:6px;">നക്ഷത്രം: ${esc(b.star||'—')}</div>
+     ${b.vehicleNumber?`<div style="font-size:16px;font-weight:800;color:#18794e;margin-top:6px;">വാഹന നമ്പർ: ${esc(b.vehicleNumber)}</div>`:''}
+     ${b.vehicleToken?`<div style="font-size:18px;font-weight:900;color:#18794e;margin-top:4px;">വാഹനപൂജ ടോക്കൺ: <b>${esc(b.vehicleToken)}</b></div>`:''}
+     ${b.ezhuthToken?`<div style="font-size:18px;font-weight:900;color:#18794e;margin-top:4px;">എഴുത്തിനിരുത്ത് ടോക്കൺ: <b>${esc(b.ezhuthToken)}</b></div>`:''}
    </div>
 
-   <p style="font-size:12px;margin:6px 0;">ബിൽ നമ്പർ: ${esc(b.id)}<br>തീയതി: ${dt}${Object.entries(b.customFields||{}).map(([k,v])=>v?`<br>${esc(k)}: ${esc(v)}`:'').join('')}</p>
-   ${(b.families||[]).map(f=>`<p style="font-size:14px;font-weight:700;color:#33251b;">കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}
+   <p style="font-size:13px;margin:8px 0;">ബിൽ നമ്പർ: ${esc(b.id)}<br>തീയതി: ${dt}${Object.entries(b.customFields||{}).map(([k,v])=>v?`<br>${esc(k)}: ${esc(v)}`:'').join('')}</p>
+   ${(b.families||[]).map(f=>`<p style="font-size:16px;font-weight:800;color:#33251b;background:#fdf6ec;padding:6px;border-radius:4px;">കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}
    
-   <table style="margin-top:10px;">
+   <table style="width:100%;border-collapse:collapse;margin-top:12px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;">
      ${itemRows}
-     <tr><td style="font-size:16px;font-weight:900;padding-top:8px;"><b>ആകെ തുക</b></td><td align="right" style="font-size:16px;font-weight:900;padding-top:8px;"><b>₹${b.total}</b></td></tr>
    </table>
    
-   <p style="text-align:center;margin-top:12px;font-size:14px;font-weight:700;">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</p>
-   <p style="text-align:right;font-size:7px;color:#d5d5d5;margin-top:12px;letter-spacing:.2px">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p>
+   <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:900;margin-top:12px;padding-top:6px;">
+     <span>ആകെ തുക</span>
+     <span>₹${b.total}</span>
+   </div>
    
-   <div class="print-tools no-print">
+   <p style="text-align:center;margin-top:15px;font-size:16px;font-weight:bold;">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</p>
+   <p style="text-align:right;font-size:8px;color:#888;margin-top:15px;">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p>
+   
+   <div class="print-tools no-print" style="margin-top:15px;">
      <select id="receiptWidth"><option value="58mm">58mm Thermal</option><option value="80mm" selected>80mm Thermal</option></select>
      <button class="btn" onclick="printContent('thermal','receiptWidth')">Thermal Receipt Print</button>
      ${settings.normalReceipt?`<button class="btn secondary" onclick="printContent('normal')">A4 Receipt Print</button>`:''}
@@ -292,20 +382,17 @@ function showReceipt(b){
 }
 
 function renderHistory(){
- document.getElementById('historyList').innerHTML=bills.length?bills.map(b=>`<div class="report-row"><div class="actions" style="justify-content:space-between;align-items:center"><div><b>${esc(b.name)}</b> · ₹${b.total}<div class="muted">${new Date(b.time).toLocaleString('ml-IN')} · ${(b.items||[]).length} വഴിപാടുകൾ${b.vehicleToken?' · '+esc(b.vehicleToken):''}${b.ezhuthToken?' · '+esc(b.ezhuthToken):''}</div></div>${currentRole==='admin'?`<button class="btn small secondary" onclick="deleteBill('${esc(b.id)}')">ബിൽ Delete ചെയ്യുക</button>`:''}</div></div>`).join(''):'ഇതുവരെ ബില്ലുകളില്ല';
+ document.getElementById('historyList').innerHTML=bills.length?bills.map(b=>`<div class="report-row"><div class="actions" style="justify-content:space-between;align-items:center"><div><b>${esc(b.name)}</b> · ₹${b.total}<div class="muted">${new Date(b.time).toLocaleString('ml-IN')} · ${(b.items||[]).length} വഴിപാടുകൾ</div></div>${currentRole==='admin'?`<button class="btn small secondary" onclick="deleteBill('${esc(b.id)}')">Delete</button>`:''}</div></div>`).join(''):'ഇതുവരെ ബില്ലുകളില്ല';
 }
 
 async function deleteBill(id){
  if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}
- const bill=bills.find(x=>String(x.id)===String(id));
- if(!bill)return;
- if(!confirm(`ബിൽ ${id} Delete ചെയ്യണോ? ഈ നടപടി തിരിച്ചെടുക്കാനാവില്ല.`))return;
+ if(!confirm(`ബിൽ Delete ചെയ്യണോ?`))return;
  try{
    await cloudBills().doc(String(id)).delete();
    bills=bills.filter(x=>String(x.id)!==String(id)); saveLocalCache(); renderHistory();
-   if(!document.getElementById('reports').classList.contains('hidden'))renderReport();
    toast('ബിൽ Delete ചെയ്തു');
- }catch(e){console.error(e);alert('ബിൽ Delete ചെയ്യാനായില്ല: '+(e.message||e))}
+ }catch(e){alert('Delete ചെയ്യാനായില്ല');}
 }
 
 let reportType='daily';
@@ -313,4 +400,14 @@ function setReportType(t){ reportType=t; renderReport(); }
 
 function renderReport(){
  let val=document.getElementById('reportDate').value||new Date().toISOString().slice(0,10),d=new Date(val+'T12:00:00');
- let list=bills.filt
+ let list=bills.filter(b=>{let x=new Date(b.time);return reportType==='daily'?localDateKey(x)===val:reportType==='monthly'?x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth():x.getFullYear()===d.getFullYear()});
+ let sum=list.reduce((s,b)=>s+b.total,0);
+ let title=reportType==='daily'?(settings.reportDaily||'ഡെയിലി റിപ്പോർട്ട്'):reportType==='monthly'?(settings.reportMonthly||'മാസ റിപ്പോർട്ട്'):(settings.reportYearly||'വാർഷിക റിപ്പോർട്ട്');
+ let rows='';
+ if(reportType==='monthly'){let days={};list.forEach(b=>{let k=new Date(b.time).toLocaleDateString('en-CA');days[k]=(days[k]||0)+b.total});rows=Object.entries(days).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}
+ if(reportType==='yearly'){let months={};list.forEach(b=>{let x=new Date(b.time),k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');months[k]=(months[k]||0)+b.total});rows=Object.entries(months).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}
+ if(reportType==='daily'){rows=list.map(b=>`<tr><td>${new Date(b.time).toLocaleTimeString('ml-IN')} - ${esc(b.name)}</td><td align=right>₹${b.total}</td></tr>`).join('')}
+ document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>കാലയളവ്: ${reportType==='daily'?d.toLocaleDateString('ml-IN'):reportType==='monthly'?d.toLocaleDateString('ml-IN',{month:'long',year:'numeric'}):d.getFullYear()}</p>${rows?`<table style="width:100%;border-collapse:collapse"><tr><th align=left>${reportType==='daily'?'സമയം / ഭക്തൻ':'തീയതി / മാസം'}</th><th align=right>വരുമാനം</th></tr>${rows}</table>`:''}<p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`;
+}
+
+function printContent(
