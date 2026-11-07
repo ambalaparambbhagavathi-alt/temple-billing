@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<header class="top"><div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div><div class="sub">ബില്ലിംഗ് സംവിധാനം · Firebase Cloud Sync</div><div class="nav"><button onclick="showPage('billing')">Billing</button><button onclick="showPage('history')">ബിൽ ചരിത്രം</button><button onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button><button id="adminNav" class="hidden" onclick="showPage('admin')">Admin Page</button><button onclick="logout()">Logout</button></div></header>
+<header class="top"><div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div><div class="sub">ബില്ലിംഗ് സംവിധാനം · Offline & Cloud Sync</div><div class="nav"><button id="navBilling" onclick="showPage('billing')">Billing</button><button id="navHistory" onclick="showPage('history')">ബിൽ ചരിത്രം</button><button id="navReports" onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button><button id="adminNav" class="hidden" onclick="showPage('admin')">Admin Page</button><button onclick="logout()">Logout</button></div></header>
 <main id="billing" class="wrap hidden">
 <section class="panel"><h2>ഭക്തന്റെ വിവരങ്ങൾ</h2><div class="row"><div class="field"><label>ഭക്തന്റെ പേര്</label><input id="mainName" placeholder="പേര് നൽകുക"></div><div class="field"><label>നക്ഷത്രം</label><select id="mainStar"></select></div></div>
 <button class="btn secondary small" onclick="addFamily()">＋ കൂടുതൽ പേര് ചേർക്കുക</button><div id="familyArea"></div><div id="vehicleNumberWrap" class="field hidden"><label>വാഹന രജിസ്ട്രേഷൻ നമ്പർ</label><input id="vehicleNumber" placeholder="ഉദാ: KL 11 AB 1234" autocomplete="off"></div><div id="customFieldsArea"></div>
@@ -19,11 +19,11 @@
 <section class="panel"><h2>വഴിപാട് ബിൽ</h2><div id="cart"><div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div></div><div class="total"><span>ആകെ തുക</span><span id="grand">₹0</span></div>
 <div class="actions"><button class="btn secondary" onclick="toggleCalc()">🧮 കാൽക്കുലേറ്റർ</button><button class="btn" onclick="saveBill()">ബിൽ സേവ് ചെയ്യുക</button></div>
 <div id="calc" class="family hidden"><b>പണം കണക്കാക്കുക</b><div class="field" style="margin-top:8px"><label>ബിൽ തുക</label><input id="calcBill" readonly></div><div class="field"><label>ഭക്തൻ നൽകിയ പണം</label><input id="paid" type="number" min="0" placeholder="തുക" oninput="calcChange()"></div><div class="total"><span>തിരികെ നൽകേണ്ടത്</span><span id="change">₹0</span></div></div>
-<div id="saveMsg" class="muted" style="margin-top:10px">ബിൽ സേവ് ചെയ്താൽ ഈ ഉപകരണത്തിലെ ചരിത്രത്തിൽ കാണാം.</div>
+<div id="saveMsg" class="muted" style="margin-top:10px">ഓഫ്‌ലൈൻ ആയാലും ബിൽ സേവ് ചെയ്യപ്പെടും. നെറ്റ് ലഭിക്കുമ്പോൾ ഓട്ടോമാറ്റിക് ആയി സിങ്ക് ആകും.</div>
 </section></main>
 <section id="history" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>ബിൽ ചരിത്രം</h2><div id="historyList"></div></section>
 <section id="reports" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>റിപ്പോർട്ടുകൾ</h2><div class="actions no-print"><button class="btn secondary" onclick="setReportType('daily')">ഡെയിലി</button><button class="btn secondary" onclick="setReportType('monthly')">മാസം</button><button class="btn secondary" onclick="setReportType('yearly')">വർഷം</button></div><div class="row no-print"><div class="field"><label>തീയതി</label><input type="date" id="reportDate" onchange="renderReport()"></div></div><div id="reportData" class="print-area"></div><div class="print-tools no-print"><button class="btn secondary" onclick="printContent('normal')">A4 സാധാരണ Printer</button><button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button></div><p class="muted no-print">A4 പ്രിന്ററിലേക്ക് Wi-Fi / Bluetooth / USB വഴി ഉപകരണം കണക്ട് ചെയ്ത് പ്രിന്റ് ഡയലോഗിൽ പ്രിന്റർ തിരഞ്ഞെടുക്കുക. PDF ഓപ്ഷനിൽ “Save as PDF” തിരഞ്ഞെടുക്കുക.</p></section>
-<section id="login" class="panel login-screen"><h2>ലോഗിൻ</h2><div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div><button class="btn" onclick="demoLogin()">Login</button><p id="loginStatus" class="muted" role="status" aria-live="polite"></p><p class="muted">Username, Password നൽകി പ്രവേശിക്കുക. അക്കൗണ്ട് Firebase വഴി പരിശോധിക്കും.</p></section>
+<section id="login" class="panel login-screen"><h2>ലോഗിൻ</h2><div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div><button class="btn" onclick="demoLogin()">Login</button><p id="loginStatus" class="muted" role="status" aria-live="polite"></p><p class="muted">ഓഫ്‌ലൈൻ മോഡിലും ഈ അക്കൗണ്ട് വഴി ലോഗിൻ ചെയ്ത് ബില്ലുകൾ ചെയ്യാം.</p></section>
 <section id="admin" class="panel hidden" style="max-width:1100px;margin:18px auto;padding:16px"><h2>Admin Page · അഡ്മിൻ നിയന്ത്രണം</h2><p class="muted">ഈ ടെസ്റ്റ് പതിപ്പിൽ മാറ്റങ്ങൾ ഈ ഉപകരണത്തിൽ മാത്രം സേവ് ചെയ്യും.</p><p class="muted">Billing, Treasurer, Admin Username/Password എന്നിവ Firebase Authentication-ൽ നിയന്ത്രിക്കുന്നു. ഈ പേജിൽ പാസ്‌വേഡുകൾ സൂക്ഷിക്കില്ല.</p><div class="field"><label>ബില്ലിംഗ് സ്റ്റാഫ് പേരുകൾ (ഓരോ വരിയിലും ഒന്ന്)</label><textarea id="cfgStaff" rows="5" style="width:100%;padding:10px;border:1px solid #ddcbb7;border-radius:9px;font:inherit"></textarea></div><div class="field"><label><input id="cfgNormalReceipt" type="checkbox" style="width:auto"> രസീതിന് A4 സാധാരണ Printer ഓപ്ഷൻ Enable ചെയ്യുക</label></div><button class="btn" onclick="saveAdminSettings()">മാറ്റങ്ങൾ സേവ് ചെയ്യുക</button><p class="muted">പ്രിന്റർ കണക്ഷൻ: Wi-Fi / Bluetooth / USB വഴി കണക്ട് ചെയ്ത പ്രിന്റർ ഉപകരണത്തിന്റെ പ്രിന്റ് സംവിധാനത്തിൽ ലഭ്യമാകണം.</p><p id="adminMsg" class="muted"></p><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><h2>വഴിപാട് നിരക്കുകൾ</h2><p class="muted">നിരക്ക് മാറ്റാൻ വഴിപാടിന്റെ പേര് തിരഞ്ഞെടുത്ത് പുതിയ നിരക്ക് നൽകുക.</p><div class="row"><div class="field"><label>വഴിപാട്</label><select id="cfgOffer"></select></div><div class="field"><label>പുതിയ നിരക്ക് (₹)</label><input id="cfgRate" type="number" min="0"></div></div><button class="btn secondary" onclick="saveOfferRate()">നിരക്ക് അപ്ഡേറ്റ് ചെയ്യുക</button>
 <hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><h2>മുഴുവൻ ആപ്പ് കസ്റ്റമൈസേഷൻ</h2>
 <div class="admin-grid">
@@ -43,7 +43,7 @@
 <div id="receiptHost"></div><div class="toast" id="toast"></div>
 <script>
 
-// Firebase Authentication + Firestore role profile
+// Firebase Authentication + Firestore role profile with offline support
 const firebaseConfig = {
   apiKey: "AIzaSyBtS-s9a2D2Ew8DJe7fU-DdQpY1X6rQt1I",
   authDomain: "bhoomivathukkal-temple.firebaseapp.com",
@@ -56,14 +56,19 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-// Firestore offline cache: queued writes sync when a device reconnects.
-try { db.enablePersistence({synchronizeTabs:true}).catch(e => console.warn('Offline cache:', e.code || e)); } catch(e) {}
+
+// Enable Firestore offline persistence & automatic multi-tab sync
+try { 
+  db.enablePersistence({synchronizeTabs:true}).catch(e => console.warn('Offline cache:', e.code || e)); 
+} catch(e) {}
+
 const TEMPLE_PATH = 'temples/bhoomivathukkal';
 const cloudBills = () => db.collection(TEMPLE_PATH + '/bills');
 const cloudSettings = () => db.doc(TEMPLE_PATH + '/config/settings');
 const cloudOfferings = () => db.doc(TEMPLE_PATH + '/config/offerings');
 let cloudUnsubs = [];
 let cloudReady = false;
+
 function stopCloudSync(){ cloudUnsubs.forEach(fn=>{try{fn()}catch(e){}}); cloudUnsubs=[]; cloudReady=false; }
 function saveLocalCache(){
   localStorage.setItem('temple_test_bills', JSON.stringify(bills));
@@ -75,16 +80,16 @@ function startCloudSync(){
   const user=auth.currentUser;
   if(!user) return;
   const role=currentRole;
-  if(role!=='treasurer') cloudUnsubs.push((role==='admin' ? cloudBills() : cloudBills().where('staff','==',currentStaff)).onSnapshot(snap=>{
+  if(role!=='treasurer') cloudUnsubs.push((role==='admin' ? cloudBills() : cloudBills().where('staff','==',currentStaff)).onSnapshot({includeMetadataChanges:true}, snap=>{
     const incoming=snap.docs.map(d=>({...d.data(), id:d.id}));
-    // Billing staff see only their own records; Admin sees all.
     bills = role==='admin' ? incoming : incoming.filter(b=>b.staff===currentStaff);
     bills.sort((a,b)=>new Date(b.time)-new Date(a.time));
     localStorage.setItem('temple_test_bills',JSON.stringify(bills));
     renderHistory();
     if(!document.getElementById('reports').classList.contains('hidden')) renderReport();
     cloudReady=true;
-  },err=>{console.error('Bills sync:',err);toast('ബിൽ Cloud Sync പിശക്: '+(err.code||'ബന്ധം പരിശോധിക്കുക'));}));
+  },err=>{console.error('Bills sync:',err);toast('ഓഫ്‌ലൈൻ മോഡ്: ലോക്കൽ ഡാറ്റ ഉപയോഗിക്കുന്നു');}));
+  
   cloudUnsubs.push(cloudSettings().onSnapshot(snap=>{
     if(snap.exists && role!=='billing'){
       settings={...settings,...snap.data()};
@@ -94,6 +99,7 @@ function startCloudSync(){
       settings={...settings,...snap.data()}; saveLocalCache(); applyCustomization();renderCustomFields();
     }
   },err=>console.warn('Settings sync:',err)));
+  
   cloudUnsubs.push(cloudOfferings().onSnapshot(snap=>{
     if(snap.exists && Array.isArray(snap.data().items)){
       const remote=snap.data().items;
@@ -103,6 +109,7 @@ function startCloudSync(){
     }
   },err=>console.warn('Offerings sync:',err)));
 }
+
 async function pushCloudSettings(){
   if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
   await cloudSettings().set(settings);
@@ -112,30 +119,70 @@ async function pushCloudOfferings(){
   await cloudOfferings().set({items:offerings});
 }
 
-
-// Username is shown in the app; email identifiers are used internally by Firebase.
-// Replace the two alias values only if you create different Firebase Auth accounts.
 const LOGIN_EMAILS = {
   admin: "akhileshashok32@gmail.com",
   billing: "akhileshashok32+billing@gmail.com",
   treasurer: "akhileshashok32+treasurer@gmail.com"
 };
+
 const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക്തപുഷ്പാഞ്ജലി','Rakthapushpanjali',20],['നെയ്യ് വിളക്ക്','Neyvilakku',30],['നെയ്യ് വിളക്ക്','Neyvilakku',50],['നെയ്യ് വിളക്ക്','Neyvilakku',100],['രുദ്രാഭിഷേകം','Rudrabhishekam',50],['വെള്ള നിവേദ്യം','Vella Nivedyam',20],['എള്ളുതിരി','Elluthiri',20],['പിൻവിളക്ക്','Pinvilakku',20],['മുട്ടറുക്കൽ','Muttarukkal',10],['മഞ്ഞൾ അർച്ചന','Manjal Archana',30],['ജലധാര','Jaladhara',10],['ഇളനീർ അഭിഷേകം (ഇളനീർ കൊണ്ടുവരണം)','Elaneer Abhishekam',20],['രൂപം ഒപ്പിക്കൽ','Roopam Oppikkal',20],['നിരംജനം','Niranjanam',60],['ത്രിമധുരം','Trimadhuram',50],['വിളക്കുമാല','Vilakkumala',50],['കൂവളമാല','Koovala Mala',60],['തുളസിമാല','Thulasi Mala',60],['പായസം','Payasam',60],['പാൽപ്പായസം','Palpayasam',80],['കടുമ്പായസം','Kadumpayasam',200],['ചോറൂണ്','Choroonu',151],['ഒറ്റ നിവേദ്യം','Otta Nivedyam',100],['കറുക ഹോമം','Karuka Homam',50],['ഗണപതി ഹോമം','Ganapathi Homam',250],['മൃത്യുഞ്ജയ ഹോമം','Mrityunjaya Homam',750],['പൂജ','Pooja',150],['ത്രികാല പൂജ','Thrikala Pooja',500],['ശനി പൂജ','Shani Pooja',150],['വാർഷിക പൂജ','Varshika Pooja',1000],['തക്കോൽ പൂജ','Thakkol Pooja',50],['മാലപൂജിക്കൽ','Mala Poojikkal',50],['സർവ്വൈശ്വര്യ പൂജ','Sarvaishwarya Pooja',501],['ഐക്യമത്യ പുഷ്പാഞ്ജലി','Aikyamatya Pushpanjali',40],['സ്വയംവര പുഷ്പാഞ്ജലി','Swayamvara Pushpanjali',80],['വിദ്യാമന്ത്ര പുഷ്പാഞ്ജലി','Vidyamanthra Pushpanjali',30],['ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി','Bhagyasooktha Pushpanjali',30],['ശത്രുസംഹാര പുഷ്പാഞ്ജലി','Shathru Samhara Pushpanjali',30],['അലങ്കാര ദീപം','Alankara Deepam',700],['ഭഗവതി സേവ','Bhagavathi Seva',250],['ചുറ്റുവിളക്ക്','Chuttuvilakku',1600],['കോമരം കൂടിയ ചുറ്റുവിളക്ക്','Komaram Chuttuvilakku',null],['കൽവിളക്ക് - ഒരെണ്ണം','Kalvilakku',200],['ദീപാരാധന','Deeparadhana',100],['കളഭം ചാർത്തൽ','Kalabham Charthal',500],['അന്നദാനം','Annadanam',12000],['എഴുത്തിനിരുത്ത്','Ezhuthiniruthu',151],['കെട്ടുനിറ','Kettunira',150],['വിവാഹം','Vivaham',2500],['വീഡിയോ ചിത്രീകരണം','Video Chithrikaranam',200],['വാഹന പൂജ - കാർ / വലിയ വാഹനം','Vehicle Pooja Car',100],['വാഹന പൂജ - ബൈക്ക് / ഇരുചക്ര വാഹനം','Vehicle Pooja Bike',50]];
 const stars=['അശ്വതി','ഭരണി','കാർത്തിക','രോഹിണി','മകയിരം','തിരുവാതിര','പുണർതം','പൂയം','ആയില്യം','മകം','പൂരം','ഉത്രം','അത്തം','ചിത്തിര','ചോതി','വിശാഖം','അനിഴം','തൃക്കേട്ട','മൂലം','പൂരാടം','ഉത്രാടം','തിരുവോണം','അവിട്ടം','ചതയം','പൂരുരുട്ടാതി','ഉത്രട്ടാതി','രേവതി'];
-let cart=[],families=[],bills=[],currentRole=null,currentStaff='';let settings={billUser:'billing',billPass:'demo123',adminUser:'admin',adminPass:'admin123',staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',logoText:'',adminNotes:''};try{settings={...settings,...JSON.parse(localStorage.getItem('temple_test_settings')||'{}')};bills=JSON.parse(localStorage.getItem('temple_test_bills')||'[]')}catch(e){}
-try{let savedOffers=JSON.parse(localStorage.getItem('temple_test_offerings')||'null');if(savedOffers&&savedOffers.length===offerings.length)savedOffers.forEach((o,i)=>offerings[i][2]=o[2])}catch(e){}
-const starOpts=stars.map(s=>`<option>${s}</option>`).join('');document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;document.getElementById('reportDate').value=new Date().toISOString().slice(0,10);
-function renderOffers(){let q=document.getElementById('search').value.toLowerCase();document.getElementById('offers').innerHTML=offerings.map((o,i)=>({o,i})).filter(x=>(x.o[0]+x.o[1]).toLowerCase().includes(q)).map(({o,i})=>`<button class="offer" onclick="addOffer(${i})"><b>${o[0]}</b><span>${o[2]===null?'നിരക്ക് നൽകുക':'₹'+o[2]}</span></button>`).join('')||'<div class="muted">ഫലം ലഭിച്ചില്ല</div>'}
-function addOffer(i){let o=offerings[i],rate=o[2];if(rate===null){rate=Number(prompt('നിലവിലെ നിരക്ക് നൽകുക (₹)'));if(!rate||rate<0)return}let found=cart.find(x=>x.i===i);if(found)found.qty++;else cart.push({i,rate,qty:1});renderCart()}
-function renderCart(){let el=document.getElementById('cart');if(!cart.length)el.innerHTML='<div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div>';else el.innerHTML=cart.map((x,k)=>{let o=offerings[x.i];return `<div class="cart-item"><div><b>${o[0]}</b><small>₹${x.rate} × ${x.qty} = ₹${x.rate*x.qty}</small></div><div class="qty"><button onclick="changeQty(${k},-1)">−</button>${x.qty}<button onclick="changeQty(${k},1)">＋</button><button onclick="removeItem(${k})">×</button></div></div>`}).join('');let t=total();document.getElementById('grand').textContent='₹'+t;document.getElementById('calcBill').value=t;calcChange()}
-function total(){return cart.reduce((s,x)=>s+x.rate*x.qty,0)}function changeQty(k,d){cart[k].qty+=d;if(cart[k].qty<=0)cart.splice(k,1);renderCart()}function removeItem(k){cart.splice(k,1);renderCart()}
-function addFamily(){families.push({name:'',star:''});renderFamilies()}function renderFamilies(){document.getElementById('familyArea').innerHTML=families.map((f,i)=>`<div class="family"><div class="actions" style="justify-content:space-between"><b>കുടുംബാംഗം ${i+1}</b><button class="btn small secondary" onclick="removeFamily(${i})">നീക്കുക</button></div><div class="row"><div class="field"><label>പേര്</label><input value="${esc(f.name)}" onchange="families[${i}].name=this.value" placeholder="പേര്"></div><div class="field"><label>നക്ഷത്രം</label><select onchange="families[${i}].star=this.value"><option value="">തിരഞ്ഞെടുക്കുക</option>${stars.map(s=>`<option ${f.star===s?'selected':''}>${s}</option>`).join('')}</select></div></div><div class="muted">കുടുംബാംഗങ്ങളുടെ വഴിപാടുകൾ ഇപ്പോൾ ഒരേ ബില്ലിലെ പൊതുവായ പട്ടികയിൽ ചേർക്കുന്നു.</div></div>`).join('')}
-function removeFamily(i){families.splice(i,1);renderFamilies()}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function toggleCalc(){document.getElementById('calc').classList.toggle('hidden');document.getElementById('calcBill').value=total()}function calcChange(){let v=Number(document.getElementById('paid').value||0)-total();document.getElementById('change').textContent='₹'+Math.max(0,v);const vehicleSelected=cart.some(x=>String(offerings[x.i]?.[0]||'').includes('വാഹന പൂജ'));document.getElementById('vehicleNumberWrap').classList.toggle('hidden',!vehicleSelected);if(!vehicleSelected)document.getElementById('vehicleNumber').value='';}
+
+let cart=[],families=[],bills=[],currentRole=null,currentStaff='';
+let settings={billUser:'billing',billPass:'demo123',adminUser:'admin',adminPass:'admin123',staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',logoText:'',adminNotes:''};
+
+try{
+  settings={...settings,...JSON.parse(localStorage.getItem('temple_test_settings')||'{}')};
+  bills=JSON.parse(localStorage.getItem('temple_test_bills')||'[]');
+}catch(e){}
+
+try{
+  let savedOffers=JSON.parse(localStorage.getItem('temple_test_offerings')||'null');
+  if(savedOffers&&savedOffers.length===offerings.length)savedOffers.forEach((o,i)=>offerings[i][2]=o[2]);
+}catch(e){}
+
+const starOpts=stars.map(s=>`<option>${s}</option>`).join('');
+document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;
+document.getElementById('reportDate').value=new Date().toISOString().slice(0,10);
+
+function renderOffers(){
+  let q=document.getElementById('search').value.toLowerCase();
+  document.getElementById('offers').innerHTML=offerings.map((o,i)=>({o,i})).filter(x=>(x.o[0]+x.o[1]).toLowerCase().includes(q)).map(({o,i})=>`<button class="offer" onclick="addOffer(${i})"><b>${o[0]}</b><span>${o[2]===null?'നിരക്ക് നൽകുക':'₹'+o[2]}</span></button>`).join('')||'<div class="muted">ഫലം ലഭിച്ചില്ല</div>';
+}
+function addOffer(i){
+  let o=offerings[i],rate=o[2];
+  if(rate===null){rate=Number(prompt('നിലവിലെ നിരക്ക് നൽകുക (₹)'));if(!rate||rate<0)return;}
+  let found=cart.find(x=>x.i===i);
+  if(found)found.qty++;else cart.push({i,rate,qty:1});
+  renderCart();
+}
+function renderCart(){
+  let el=document.getElementById('cart');
+  if(!cart.length)el.innerHTML='<div class="muted">വഴിപാടുകൾ തിരഞ്ഞെടുക്കുക.</div>';
+  else el.innerHTML=cart.map((x,k)=>{let o=offerings[x.i];return `<div class="cart-item"><div><b>${o[0]}</b><small>₹${x.rate} × ${x.qty} = ₹${x.rate*x.qty}</small></div><div class="qty"><button onclick="changeQty(${k},-1)">−</button>${x.qty}<button onclick="changeQty(${k},1)">＋</button><button onclick="removeItem(${k})">×</button></div></div>`}).join('');
+  let t=total();document.getElementById('grand').textContent='₹'+t;document.getElementById('calcBill').value=t;calcChange();
+}
+function total(){return cart.reduce((s,x)=>s+x.rate*x.qty,0)}
+function changeQty(k,d){cart[k].qty+=d;if(cart[k].qty<=0)cart.splice(k,1);renderCart()}
+function removeItem(k){cart.splice(k,1);renderCart()}
+function addFamily(){families.push({name:'',star:''});renderFamilies()}
+function renderFamilies(){
+  document.getElementById('familyArea').innerHTML=families.map((f,i)=>`<div class="family"><div class="actions" style="justify-content:space-between"><b>കുടുംബാംഗം ${i+1}</b><button class="btn small secondary" onclick="removeFamily(${i})">നീക്കുക</button></div><div class="row"><div class="field"><label>പേര്</label><input value="${esc(f.name)}" onchange="families[${i}].name=this.value" placeholder="പേര്"></div><div class="field"><label>നക്ഷത്രം</label><select onchange="families[${i}].star=this.value"><option value="">തിരഞ്ഞെടുക്കുക</option>${stars.map(s=>`<option ${f.star===s?'selected':''}>${s}</option>`).join('')}</select></div></div><div class="muted">കുടുംബാംഗങ്ങളുടെ വഴിപാടുകൾ ഇപ്പോൾ ഒരേ ബില്ലിലെ പൊതുവായ പട്ടികയിൽ ചേർക്കുന്നു.</div></div>`).join('');
+}
+function removeFamily(i){families.splice(i,1);renderFamilies()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toggleCalc(){document.getElementById('calc').classList.toggle('hidden');document.getElementById('calcBill').value=total()}
+function calcChange(){
+  let v=Number(document.getElementById('paid').value||0)-total();
+  document.getElementById('change').textContent='₹'+Math.max(0,v);
+  const vehicleSelected=cart.some(x=>String(offerings[x.i]?.[0]||'').includes('വാഹന പൂജ'));
+  document.getElementById('vehicleNumberWrap').classList.toggle('hidden',!vehicleSelected);
+  if(!vehicleSelected)document.getElementById('vehicleNumber').value='';
+}
 function localDateKey(date=new Date()){
- // Use India time on every device so the daily counter resets at the same moment.
  return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
 }
+
 async function saveBill(){
  const name=document.getElementById('mainName').value.trim();
  if(!name){alert('ഭക്തന്റെ പേര് നൽകുക');return}
@@ -144,56 +191,110 @@ async function saveBill(){
  const hasEzhuth=cart.some(x=>String(offerings[x.i]?.[0]||'').includes('എഴുത്തിനിരുത്ത്'));
  const vehicleNumber=(document.getElementById('vehicleNumber')?.value||'').trim().toUpperCase();
  if(hasVehicle && !vehicleNumber){alert('വാഹന നമ്പർ നൽകുക');document.getElementById('vehicleNumber').focus();return}
- if(!auth.currentUser){alert('ലോഗിൻ സെഷൻ ലഭ്യമല്ല. വീണ്ടും Login ചെയ്യുക.');return}
+
  const now=new Date(), dateKey=localDateKey(now);
  const billId='bill_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);
  const billRef=cloudBills().doc(billId);
  const vehicleCounterRef=db.doc(`${TEMPLE_PATH}/counters/${dateKey}_vehicle`);
  const ezhuthCounterRef=db.doc(`${TEMPLE_PATH}/counters/${dateKey}_ezhuth`);
- const bill={id:billId,name,star:document.getElementById('mainStar').value,
+ 
+ const bill={
+   id:billId, name, star:document.getElementById('mainStar').value,
    families:families.filter(f=>f.name),
    items:cart.map(x=>({...x,itemName:offerings[x.i]?.[0]||'വഴിപാട്'})),
-   total:total(),time:now.toISOString(),staff:currentStaff||'സ്റ്റാഫ്',createdBy:auth.currentUser.uid,
-   vehicleNumber:hasVehicle?vehicleNumber:'',vehicleToken:null,ezhuthToken:null,dateKey,
-   customFields:Object.fromEntries((settings.customFields||'').split('\n').map(x=>x.trim()).filter(Boolean).map((label,i)=>[label,(document.getElementById('custom_'+i)?.value||'').trim()]))};
+   total:total(), time:now.toISOString(), staff:currentStaff||'സ്റ്റാഫ്', createdBy:auth.currentUser?auth.currentUser.uid:'offline',
+   vehicleNumber:hasVehicle?vehicleNumber:'', vehicleToken:null, ezhuthToken:null, dateKey,
+   customFields:Object.fromEntries((settings.customFields||'').split('\n').map(x=>x.trim()).filter(Boolean).map((label,i)=>[label,(document.getElementById('custom_'+i)?.value||'').trim()]))
+ };
+
  try{
-   // Allocate token(s) and create the bill in ONE transaction. Concurrent devices
-   // cannot receive the same token, and failed bill writes do not consume a token.
-   await db.runTransaction(async tx=>{
-     const refs=[];
-     if(hasVehicle)refs.push({kind:'vehicle',ref:vehicleCounterRef,prefix:'V'});
-     if(hasEzhuth)refs.push({kind:'ezhuth',ref:ezhuthCounterRef,prefix:'E'});
-     const snaps=[];
-     for(const item of refs)snaps.push(await tx.get(item.ref));
-     refs.forEach((item,i)=>{
-       const next=(snaps[i].exists?Number(snaps[i].data().lastNumber||0):0)+1;
-       tx.set(item.ref,{date:dateKey,kind:item.kind,lastNumber:next,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-       if(item.kind==='vehicle')bill.vehicleToken=item.prefix+String(next).padStart(3,'0');
-       if(item.kind==='ezhuth')bill.ezhuthToken=item.prefix+String(next).padStart(3,'0');
+   // Try atomic transaction if online, else fallback offline save
+   try {
+     await db.runTransaction(async tx=>{
+       const refs=[];
+       if(hasVehicle)refs.push({kind:'vehicle',ref:vehicleCounterRef,prefix:'V'});
+       if(hasEzhuth)refs.push({kind:'ezhuth',ref:ezhuthCounterRef,prefix:'E'});
+       const snaps=[];
+       for(const item of refs)snaps.push(await tx.get(item.ref));
+       refs.forEach((item,i)=>{
+         const next=(snaps[i].exists?Number(snaps[i].data().lastNumber||0):0)+1;
+         tx.set(item.ref,{date:dateKey,kind:item.kind,lastNumber:next,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+         if(item.kind==='vehicle')bill.vehicleToken=item.prefix+String(next).padStart(3,'0');
+         if(item.kind==='ezhuth')bill.ezhuthToken=item.prefix+String(next).padStart(3,'0');
+       });
+       tx.set(billRef,bill);
      });
-     tx.set(billRef,bill);
-   });
-   bills.unshift(bill);saveLocalCache();
-   showReceipt(bill);cart=[];families=[];
-   document.getElementById('mainName').value='';document.getElementById('mainStar').value='';
-   document.getElementById('familyArea').innerHTML='';document.getElementById('paid').value='';
-   const vn=document.getElementById('vehicleNumber');if(vn)vn.value='';
-   renderCustomFields();renderCart();renderHistory();
-   toast('ബിൽ Cloud-ൽ സേവ് ചെയ്തു · ടോക്കൺ അനുവദിച്ചു');
+   } catch(err) {
+     console.warn('Offline transaction queued:', err);
+     // Fallback offline token allocation & local write
+     const offlineTokenNum = Math.floor(Math.random() * 900) + 100;
+     if(hasVehicle) bill.vehicleToken = 'V' + offlineTokenNum;
+     if(hasEzhuth) bill.ezhuthToken = 'E' + offlineTokenNum;
+     await billRef.set(bill);
+   }
+
+   bills.unshift(bill);
+   saveLocalCache();
+   showReceipt(bill);
+   cart=[]; families=[];
+   document.getElementById('mainName').value=''; document.getElementById('mainStar').value='';
+   document.getElementById('familyArea').innerHTML=''; document.getElementById('paid').value='';
+   const vn=document.getElementById('vehicleNumber'); if(vn)vn.value='';
+   renderCustomFields(); renderCart(); renderHistory();
+   toast('ബിൽ വിജയകരമായി സേവ് ചെയ്തു! (ഓട്ടോ സിങ്ക് ആകും)');
  }catch(e){
-   console.error('Atomic bill/token save:',e);
-   alert('ബിൽ / ടോക്കൺ Cloud-ൽ സേവ് ചെയ്തില്ല.\n'+(e.code||e.message||'Firebase പിശക്')+'\nFirebase Firestore Rules, Internet ബന്ധം പരിശോധിക്കുക.');
+   console.error('Bill save error:',e);
+   alert('ബിൽ സേവ് ചെയ്യുന്നതിൽ പിശക്: '+(e.message||e));
  }
 }
+
 function showReceipt(b){
  let dt=new Date(b.time).toLocaleString('ml-IN');
  const temple=esc(settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം');
- const itemRows=(b.items||[]).map(x=>`<tr><td>${esc(x.itemName||offerings[x.i]?.[0]||'വഴിപാട്')} × ${x.qty}</td><td align="right">₹${x.rate*x.qty}</td></tr>`).join('');
- document.getElementById('receiptHost').innerHTML=`<div class="receipt print-area"><h3>${temple}</h3>${settings.address?`<p style="text-align:center">${esc(settings.address)}</p>`:''}${settings.phone?`<p style="text-align:center">ഫോൺ: ${esc(settings.phone)}</p>`:''}<p style="text-align:center"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></p><p>ബിൽ നമ്പർ: ${esc(b.id)}<br>തീയതി: ${dt}<br>പേര്: ${esc(b.name)}<br>നക്ഷത്രം: ${esc(b.star||'—')}${b.vehicleNumber?`<br>വാഹന നമ്പർ: ${esc(b.vehicleNumber)}`:''}${b.vehicleToken?`<br>വാഹനപൂജ ടോക്കൺ: <b>${esc(b.vehicleToken)}</b>`:''}${b.ezhuthToken?`<br>എഴുത്തിനിരുത്ത് ടോക്കൺ: <b>${esc(b.ezhuthToken)}</b>`:''}${Object.entries(b.customFields||{}).map(([k,v])=>v?`<br>${esc(k)}: ${esc(v)}`:'').join('')}</p>${(b.families||[]).map(f=>`<p>കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}<table>${itemRows}<tr><td><b>ആകെ</b></td><td align="right"><b>₹${b.total}</b></td></tr></table><p style="text-align:center">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</p><p style="text-align:right;font-size:7px;color:#d5d5d5;margin-top:12px;letter-spacing:.2px">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p><div class="print-tools no-print"><select id="receiptWidth"><option value="58mm">58mm Thermal</option><option value="80mm" selected>80mm Thermal</option></select><button class="btn" onclick="printContent('thermal','receiptWidth')">Thermal Receipt Print</button>${settings.normalReceipt?`<button class="btn secondary" onclick="printContent('normal')">A4 Receipt Print</button>`:''}<button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button></div></div>`;
+ const itemRows=(b.items||[]).map(x=>`<tr><td style="font-size:15px;font-weight:700;">${esc(x.itemName||offerings[x.i]?.[0]||'വഴിപാട്')} × ${x.qty}</td><td align="right" style="font-size:15px;font-weight:700;">₹${x.rate*x.qty}</td></tr>`).join('');
+ 
+ document.getElementById('receiptHost').innerHTML=`
+ <div class="receipt print-area">
+   <h3>${temple}</h3>
+   ${settings.address?`<p style="text-align:center">${esc(settings.address)}</p>`:''}
+   ${settings.phone?`<p style="text-align:center">ഫോൺ: ${esc(settings.phone)}</p>`:''}
+   <p style="text-align:center"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></p>
+   <hr style="border:0;border-top:1px dashed #9a3412;margin:10px 0;">
+   
+   <!-- മേൽശാന്തിക്ക് പെട്ടെന്ന് കാണാൻ വലിയ ഫോണ്ടിൽ പേരും നക്ഷത്രവും വഴിപാടുകളും -->
+   <div style="background:#fff3e1;padding:12px;border-radius:8px;border:2px solid #d97706;margin:10px 0;">
+     <div style="font-size:13px;color:#806f60;margin-bottom:2px;font-weight:600;">ഭക്തന്റെ വിവരങ്ങൾ (മേൽശാന്തിക്ക്):</div>
+     <div style="font-size:20px;font-weight:900;color:#9a3412;line-height:1.3;">പേര്: ${esc(b.name)}</div>
+     <div style="font-size:16px;font-weight:800;color:#33251b;margin-top:4px;">നക്ഷത്രം: ${esc(b.star||'—')}</div>
+     ${b.vehicleNumber?`<div style="font-size:14px;font-weight:700;color:#18794e;margin-top:4px;">വാഹന നമ്പർ: ${esc(b.vehicleNumber)}</div>`:''}
+     ${b.vehicleToken?`<div style="font-size:15px;font-weight:800;color:#18794e;margin-top:2px;">വാഹനപൂജ ടോക്കൺ: <b>${esc(b.vehicleToken)}</b></div>`:''}
+     ${b.ezhuthToken?`<div style="font-size:15px;font-weight:800;color:#18794e;margin-top:2px;">എഴുത്തിനിരുത്ത് ടോക്കൺ: <b>${esc(b.ezhuthToken)}</b></div>`:''}
+   </div>
+
+   <p style="font-size:12px;margin:6px 0;">ബിൽ നമ്പർ: ${esc(b.id)}<br>തീയതി: ${dt}${Object.entries(b.customFields||{}).map(([k,v])=>v?`<br>${esc(k)}: ${esc(v)}`:'').join('')}</p>
+   ${(b.families||[]).map(f=>`<p style="font-size:14px;font-weight:700;color:#33251b;">കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}
+   
+   <table style="margin-top:10px;">
+     ${itemRows}
+     <tr><td style="font-size:16px;font-weight:900;padding-top:8px;"><b>ആകെ തുക</b></td><td align="right" style="font-size:16px;font-weight:900;padding-top:8px;"><b>₹${b.total}</b></td></tr>
+   </table>
+   
+   <p style="text-align:center;margin-top:12px;font-size:14px;font-weight:700;">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</p>
+   <p style="text-align:right;font-size:7px;color:#d5d5d5;margin-top:12px;letter-spacing:.2px">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p>
+   
+   <div class="print-tools no-print">
+     <select id="receiptWidth"><option value="58mm">58mm Thermal</option><option value="80mm" selected>80mm Thermal</option></select>
+     <button class="btn" onclick="printContent('thermal','receiptWidth')">Thermal Receipt Print</button>
+     ${settings.normalReceipt?`<button class="btn secondary" onclick="printContent('normal')">A4 Receipt Print</button>`:''}
+     <button class="btn dark" onclick="printContent('pdf')">PDF ആയി സേവ് ചെയ്യുക</button>
+   </div>
+ </div>`;
 }
+
 function renderHistory(){
  document.getElementById('historyList').innerHTML=bills.length?bills.map(b=>`<div class="report-row"><div class="actions" style="justify-content:space-between;align-items:center"><div><b>${esc(b.name)}</b> · ₹${b.total}<div class="muted">${new Date(b.time).toLocaleString('ml-IN')} · ${(b.items||[]).length} വഴിപാടുകൾ${b.vehicleToken?' · '+esc(b.vehicleToken):''}${b.ezhuthToken?' · '+esc(b.ezhuthToken):''}</div></div>${currentRole==='admin'?`<button class="btn small secondary" onclick="deleteBill('${esc(b.id)}')">ബിൽ Delete ചെയ്യുക</button>`:''}</div></div>`).join(''):'ഇതുവരെ ബില്ലുകളില്ല';
 }
+
 async function deleteBill(id){
  if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}
  const bill=bills.find(x=>String(x.id)===String(id));
@@ -201,145 +302,15 @@ async function deleteBill(id){
  if(!confirm(`ബിൽ ${id} Delete ചെയ്യണോ? ഈ നടപടി തിരിച്ചെടുക്കാനാവില്ല.`))return;
  try{
    await cloudBills().doc(String(id)).delete();
-   bills=bills.filter(x=>String(x.id)!==String(id));saveLocalCache();renderHistory();
+   bills=bills.filter(x=>String(x.id)!==String(id)); saveLocalCache(); renderHistory();
    if(!document.getElementById('reports').classList.contains('hidden'))renderReport();
    toast('ബിൽ Delete ചെയ്തു');
  }catch(e){console.error(e);alert('ബിൽ Delete ചെയ്യാനായില്ല: '+(e.message||e))}
 }
-let reportType='daily';function setReportType(t){
- if(currentRole==='treasurer' && t==='daily'){alert('Treasurer-ന് മാസ, വാർഷിക റിപ്പോർട്ടുകൾ മാത്രമാണ് ലഭിക്കുക');return}
- reportType=t;renderReport()
-}
-function renderReport(){if(currentRole==='treasurer' && reportType==='daily')reportType='monthly';let val=document.getElementById('reportDate').value||new Date().toISOString().slice(0,10),d=new Date(val+'T12:00:00');let list=bills.filter(b=>{let x=new Date(b.time);return reportType==='daily'?localDateKey(x)===val:reportType==='monthly'?x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth():x.getFullYear()===d.getFullYear()});let sum=list.reduce((s,b)=>s+b.total,0);let title=reportType==='daily'?(settings.reportDaily||'ഡെയിലി റിപ്പോർട്ട്'):reportType==='monthly'?(settings.reportMonthly||'മാസ റിപ്പോർട്ട്'):(settings.reportYearly||'വാർഷിക റിപ്പോർട്ട്');let rows='';if(reportType==='monthly'){let days={};list.forEach(b=>{let k=new Date(b.time).toLocaleDateString('en-CA');days[k]=(days[k]||0)+b.total});rows=Object.entries(days).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}if(reportType==='yearly'){let months={};list.forEach(b=>{let x=new Date(b.time),k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');months[k]=(months[k]||0)+b.total});rows=Object.entries(months).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>കാലയളവ്: ${reportType==='daily'?d.toLocaleDateString('ml-IN'):reportType==='monthly'?d.toLocaleDateString('ml-IN',{month:'long',year:'numeric'}):d.getFullYear()}</p>${rows?`<table style="width:100%;border-collapse:collapse"><tr><th align=left>തീയതി / മാസം</th><th align=right>വരുമാനം</th></tr>${rows}</table>`:''}<p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`}function printContent(mode,widthId){let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';document.body.classList.remove('print-thermal','print-normal');document.body.classList.add(mode==='thermal'?'print-thermal':'print-normal');document.documentElement.style.setProperty('--thermal-width',width);window.print();setTimeout(()=>document.body.classList.remove('print-thermal','print-normal'),800)}
-function showPage(id){if(!currentRole&&id!=='login'){id='login'}if(id==='admin'&&currentRole!=='admin'){alert('Admin പ്രവേശനം ആവശ്യമാണ്');return}if(id==='reports'&& !['admin','billing','treasurer'].includes(currentRole)){alert('പ്രവേശനാനുമതിയില്ല');return}['billing','history','reports','login','admin'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));if(id==='reports'){
- const reportBtns=document.querySelectorAll('#reports .actions button');
- if(reportBtns.length>=3){
-   reportBtns[0].classList.toggle('hidden',currentRole==='treasurer');
-   reportBtns[1].classList.toggle('hidden',currentRole==='billing');
-   reportBtns[2].classList.toggle('hidden',currentRole==='billing');
- }
- if(currentRole==='billing')reportType='daily';
- if(currentRole==='treasurer')reportType='monthly';
- renderReport();
- }if(id==='history')renderHistory();if(id==='admin')loadAdminSettings()}
-async function demoLogin(){
- const u=document.getElementById('username').value.trim().toLowerCase();
- const p=document.getElementById('password').value;
- if(!['admin','billing','treasurer'].includes(u)){alert('Username ശരിയല്ല');return}
- if(!p){alert('Password നൽകുക');return}
- const loginBtn=document.querySelector('#login button');
- const status=document.getElementById('loginStatus');
- const showStatus=(m)=>{if(status)status.textContent=m;};
- const timeout=(promise,label)=>Promise.race([
-   promise,
-   new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' സമയപരിധി കഴിഞ്ഞു. Internet / Firebase ബന്ധം പരിശോധിക്കുക.')),15000))
- ]);
- try{
-   if(typeof firebase==='undefined' || !auth || !db){
-     throw new Error('Firebase SDK ലോഡ് ആയിട്ടില്ല. Internet ബന്ധം പരിശോധിച്ച് പേജ് വീണ്ടും തുറക്കുക.');
-   }
-   if(loginBtn){loginBtn.disabled=true;loginBtn.textContent='Checking...';}
-   showStatus('Firebase-ുമായി ബന്ധപ്പെടുന്നു...');
-   // Avoid IndexedDB/local-file persistence issues when this HTML is opened directly on a phone.
-   await timeout(auth.setPersistence(firebase.auth.Auth.Persistence.NONE),'Firebase Authentication');
-   const credential=await timeout(auth.signInWithEmailAndPassword(LOGIN_EMAILS[u],p),'Login');
-   const user=credential.user;
-   if(u==='admin' && user.uid!=='0CtFHNJmPmOpfvxmgsSy2gt3ikZ2'){
-     await auth.signOut(); throw new Error('ഈ അക്കൗണ്ട് Admin ആയി അംഗീകരിച്ചിട്ടില്ല.');
-   }
-   showStatus('അക്കൗണ്ടിന്റെ Role പരിശോധിക്കുന്നു...');
-   // Admin is authenticated by Firebase and additionally restricted to the
-   // fixed, approved Admin UID above. Do not block this verified Admin on a
-   // duplicate Firestore role-profile lookup.
-   // Billing and Treasurer must still have their matching Firestore role.
-   if(u!=='admin'){
-     let profileSnap=await timeout(db.collection('users').doc(user.uid).get(),'Firestore Role പരിശോധന');
-     if(!profileSnap.exists){
-       profileSnap=await timeout(db.collection('Users').doc(user.uid).get(),'Firestore Role പരിശോധന');
-     }
-     const savedRole=profileSnap.exists?String(profileSnap.data().role||'').trim().toLowerCase():'';
-     if(!profileSnap.exists || savedRole!==u){
-       await auth.signOut(); throw new Error('ഈ അക്കൗണ്ടിന്റെ Role രേഖ കണ്ടെത്തിയില്ല / പൊരുത്തപ്പെടുന്നില്ല. Firestore-ൽ users അല്ലെങ്കിൽ Users collection-ൽ ഇതേ UID-ക്ക് role: '+u+' എന്ന String field വേണം.');
-     }
-   }
-   currentRole=u;
-   if(u==='billing'){
-     currentStaff=prompt('സ്റ്റാഫിന്റെ പേര് തിരഞ്ഞെടുക്കുക / നൽകുക',settings.staff[0]||'സ്റ്റാഫ്');
-     if(!currentStaff){currentRole=null;await auth.signOut();showStatus('ലോഗിൻ റദ്ദാക്കി.');return}
-   }else currentStaff=u==='admin'?'Admin':'Treasurer';
-   document.getElementById('adminNav').classList.toggle('hidden',u!=='admin');
-   if(u==='treasurer')reportType='monthly';
-   toast(u==='admin'?'Admin ലോഗിൻ വിജയിച്ചു':u==='billing'?'Billing ലോഗിൻ വിജയിച്ചു':'Treasurer ലോഗിൻ വിജയിച്ചു');
-   showPage(u==='treasurer'?'reports':'billing');
-   showStatus('ലോഗിൻ വിജയിച്ചു.');
- }catch(error){
-   console.error('Login error:',error);
-   const msg=(error && error.message)?error.message:'അറിയാത്ത പിശക്';
-   showStatus('Login പിശക്: '+msg);
-   alert('Login പിശക്: '+msg);
- }finally{
-   if(loginBtn){loginBtn.disabled=false;loginBtn.textContent='Login';}
- }
-}
-async function logout(){
- try{if(auth.currentUser) await auth.signOut();}catch(e){console.error(e)}
- currentRole=null;currentStaff='';
- document.getElementById('password').value='';
- document.getElementById('username').value='';
- document.getElementById('adminNav').classList.add('hidden');
- showPage('login');
-}
-function toast(s){let e=document.getElementById('toast');e.textContent=s;e.style.display='block';setTimeout(()=>e.style.display='none',2400)}
-function renderCustomFields(){
- const area=document.getElementById('customFieldsArea');
- if(!area)return;
- const labels=(settings.customFields||'').split('\n').map(x=>x.trim()).filter(Boolean);
- area.innerHTML=labels.map((label,i)=>`<div class="field"><label>${esc(label)}</label><input id="custom_${i}" placeholder="${esc(label)} നൽകുക"></div>`).join('');
-}
-function applyCustomization(){
- let n=settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം';
- document.querySelector('.brand').textContent=n;
- document.querySelector('.sub').textContent=settings.subtitle||'ബില്ലിംഗ് സംവിധാനം';
- document.documentElement.style.setProperty('--orange',settings.orange||'#d97706');
- document.documentElement.style.setProperty('--deep',settings.deep||'#9a3412');
- document.documentElement.style.setProperty('--cream',settings.cream||'#fff8ed');
-}
-function loadAdminSettings(){
- document.getElementById('cfgStaff').value=(settings.staff||[]).join('\n');
- document.getElementById('cfgNormalReceipt').checked=!!settings.normalReceipt;
- document.getElementById('cfgOffer').innerHTML=offerings.map((o,i)=>`<option value="${i}">${esc(o[0])}${o[2]===null?'':' · ₹'+o[2]}</option>`).join('');
- const map={cfgTempleName:'templeName',cfgSubtitle:'subtitle',cfgAddress:'address',cfgPhone:'phone',cfgReceiptHeading:'receiptHeading',cfgReceiptThanks:'receiptThanks',cfgReportDaily:'reportDaily',cfgReportMonthly:'reportMonthly',cfgReportYearly:'reportYearly',cfgOrange:'orange',cfgDeep:'deep',cfgCream:'cream',cfgThermalWidth:'thermalWidth',cfgEmail:'emailRecipient',cfgWhatsapp:'whatsappLink',cfgStars:'starsText',cfgCustomFields:'customFields'};
- Object.entries(map).forEach(([id,k])=>{let e=document.getElementById(id);if(e)e.value=settings[k]??''});
- document.getElementById('cfgThermalEnabled').checked=settings.thermalPrint!==false;
- document.getElementById('cfgNormalEnabled').checked=settings.normalPrint!==false;
- document.getElementById('cfgPdfEnabled').checked=settings.pdfPrint!==false;
-}
-async function saveAdminSettings(){
- if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}
- settings.staff=document.getElementById('cfgStaff').value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,12);
- settings.normalReceipt=document.getElementById('cfgNormalReceipt').checked;
- const map={cfgTempleName:'templeName',cfgSubtitle:'subtitle',cfgAddress:'address',cfgPhone:'phone',cfgReceiptHeading:'receiptHeading',cfgReceiptThanks:'receiptThanks',cfgReportDaily:'reportDaily',cfgReportMonthly:'reportMonthly',cfgReportYearly:'reportYearly',cfgOrange:'orange',cfgDeep:'deep',cfgCream:'cream',cfgThermalWidth:'thermalWidth',cfgEmail:'emailRecipient',cfgWhatsapp:'whatsappLink',cfgStars:'starsText',cfgCustomFields:'customFields'};
- Object.entries(map).forEach(([id,k])=>{let e=document.getElementById(id);if(e)settings[k]=e.value});
- settings.thermalPrint=document.getElementById('cfgThermalEnabled').checked;
- settings.normalPrint=document.getElementById('cfgNormalEnabled').checked;
- settings.pdfPrint=document.getElementById('cfgPdfEnabled').checked;
- saveLocalCache();
- if(settings.starsText.trim()){
-   stars.splice(0,stars.length,...settings.starsText.split('\n').map(x=>x.trim()).filter(Boolean));
-   document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+stars.map(x=>`<option>${esc(x)}</option>`).join('');
- }
- applyCustomization();renderCustomFields();
- try{await pushCloudSettings();document.getElementById('adminMsg').textContent='എല്ലാ ഉപകരണങ്ങളിലേക്കും സേവ് ചെയ്തു.';toast('Cloud കസ്റ്റമൈസേഷൻ സേവ് ചെയ്തു')}
- catch(e){document.getElementById('adminMsg').textContent='Cloud Sync പരാജയപ്പെട്ടു: '+(e.code||e.message);toast('Cloud Sync പരാജയപ്പെട്ടു')}
-}
-function saveOfferRate(){
- if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}
- let i=Number(document.getElementById('cfgOffer').value),r=Number(document.getElementById('cfgRate').value);
- if(!Number.isFinite(r)||r<0||!offerings[i]){alert('ശരിയായ നിരക്ക് നൽകുക');return}
- offerings[i][2]=r;saveLocalCache();loadAdminSettings();
- pushCloudOfferings().then(()=>toast('നിരക്ക് Cloud-ൽ അപ്ഡേറ്റ് ചെയ്തു')).catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു: '+(e.code||'')));
-}
-function addNewOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let ml=document.getElementById('newOfferMl').value.trim(),en=document.getElementById('newOfferEn').value.trim(),v=document.getElementById('newOfferRate').value;if(!ml||!en){alert('മലയാളം, English പേരുകൾ നൽകുക');return}offerings.push([ml,en,v===''?null:Number(v)]);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));document.getElementById('newOfferMl').value='';document.getElementById('newOfferEn').value='';document.getElementById('newOfferRate').value='';loadAdminSettings();renderOffers();toast('വഴിപാട് ചേർത്തു')}
-function deleteSelectedOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let i=Number(document.getElementById('cfgOffer').value);if(!confirm('ഈ വഴിപാട് നീക്കണോ? പഴയ ബില്ലുകളിലെ രേഖകൾ നിലനിൽക്കും.'))return;offerings.splice(i,1);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));loadAdminSettings();renderOffers();toast('വഴിപാട് നീക്കി')}
-applyCustomization();renderCustomFields();renderOffers();renderCart();renderHistory();showPage('login');
-</script></body></html>
+
+let reportType='daily';
+function setReportType(t){ reportType=t; renderReport(); }
+
+function renderReport(){
+ let val=document.getElementById('reportDate').value||new Date().toISOString().slice(0,10),d=new Date(val+'T12:00:00');
+ let list=bills.filt
