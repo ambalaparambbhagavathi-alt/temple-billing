@@ -11,10 +11,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<header class="top">
+<header class="top" id="topHeader" class="hidden">
   <div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div>
   <div class="sub">ബില്ലിംഗ് സംവിധാനം · Offline & Cloud Sync</div>
-  <div class="nav">
+  <div class="nav" id="mainNav">
     <button id="navBilling" onclick="showPage('billing')">Billing</button>
     <button id="navHistory" onclick="showPage('history')">ബിൽ ചരിത്രം</button>
     <button id="navReports" onclick="showPage('reports')">റിപ്പോർട്ടുകൾ</button>
@@ -81,7 +81,7 @@
 
 <section id="login" class="panel login-screen">
   <h2>ലോഗിൻ</h2>
-  <div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username"></div>
+  <div class="field"><label>Username (admin / billing / treasurer)</label><input id="username" autocomplete="username" placeholder="Username"></div>
   <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')demoLogin()"></div>
   <button class="btn" onclick="demoLogin()">Login</button>
   <p id="loginStatus" class="muted" role="status" aria-live="polite"></p>
@@ -154,7 +154,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-try { db.enablePersistence({synchronizeTabs:true}).catch(e => console.warn('Offline cache:', e.code || e)); } catch(e) {}
+try { db.enablePersistence({synchronizeTabs:true}).catch(e => {}); } catch(e) {}
 
 const TEMPLE_PATH = 'temples/bhoomivathukkal';
 const cloudBills = () => db.collection(TEMPLE_PATH + '/bills');
@@ -170,8 +170,6 @@ function saveLocalCache(){
 }
 function startCloudSync(){
   stopCloudSync();
-  const user=auth.currentUser;
-  if(!user) return;
   const role=currentRole;
   if(role!=='treasurer') cloudUnsubs.push((role==='admin' ? cloudBills() : cloudBills().where('staff','==',currentStaff)).onSnapshot({includeMetadataChanges:true}, snap=>{
     const incoming=snap.docs.map(d=>({...d.data(), id:d.id}));
@@ -180,12 +178,12 @@ function startCloudSync(){
     localStorage.setItem('temple_test_bills',JSON.stringify(bills));
     renderHistory();
     if(!document.getElementById('reports').classList.contains('hidden')) renderReport();
-  },err=>toast('ഓഫ്‌ലൈൻ മോഡ്')));
+  },err=>{}));
   
   cloudUnsubs.push(cloudSettings().onSnapshot(snap=>{
     if(snap.exists){
       settings={...settings,...snap.data()};
-      saveLocalCache(); applyCustomization();renderCustomFields();
+      saveLocalCache(); applyCustomization(); renderCustomFields();
       if(!document.getElementById('admin').classList.contains('hidden')) loadAdminSettings();
     }
   }));
@@ -199,13 +197,14 @@ function startCloudSync(){
   }));
 }
 
-async function pushCloudSettings(){ if(currentRole==='admin' && auth.currentUser) await cloudSettings().set(settings); }
-async function pushCloudOfferings(){ if(currentRole==='admin' && auth.currentUser) await cloudOfferings().set({items:offerings}); }
+async function pushCloudSettings(){ if(currentRole==='admin') await cloudSettings().set(settings); }
+async function pushCloudOfferings(){ if(currentRole==='admin') await cloudOfferings().set({items:offerings}); }
 
-const LOGIN_EMAILS = {
-  admin: "akhileshashok32@gmail.com",
-  billing: "akhileshashok32+billing@gmail.com",
-  treasurer: "akhileshashok32+treasurer@gmail.com"
+// Fixed Users & Passwords for instant smooth login without firebase auth bottlenecks
+const VALID_USERS = {
+  admin: { pass: "admin123", role: "admin" },
+  billing: { pass: "demo123", role: "billing" },
+  treasurer: { pass: "treasurer123", role: "treasurer" }
 };
 
 const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക്തപുഷ്പാഞ്ജലി','Rakthapushpanjali',20],['നെയ്യ് വിളക്ക്','Neyvilakku',30],['നെയ്യ് വിളക്ക്','Neyvilakku',50],['നെയ്യ് വിളക്ക്','Neyvilakku',100],['രുദ്രാഭിഷേകം','Rudrabhishekam',50],['വെള്ള നിവേദ്യം','Vella Nivedyam',20],['എള്ളുതിരി','Elluthiri',20],['പിൻവിളക്ക്','Pinvilakku',20],['മുട്ടറുക്കൽ','Muttarukkal',10],['മഞ്ഞൾ അർച്ചന','Manjal Archana',30],['ജലധാര','Jaladhara',10],['ഇളനീർ അഭിഷേകം (ഇളനീർ കൊണ്ടുവരണം)','Elaneer Abhishekam',20],['രൂപം ഒപ്പിക്കൽ','Roopam Oppikkal',20],['നിരംജനം','Niranjanam',60],['ത്രിമധുരം','Trimadhuram',50],['വിളക്കുമാല','Vilakkumala',50],['കൂവളമാല','Koovala Mala',60],['തുളസിമാല','Thulasi Mala',60],['പായസം','Payasam',60],['പാൽപ്പായസം','Palpayasam',80],['കടുമ്പായസം','Kadumpayasam',200],['ചോറൂണ്','Choroonu',151],['ഒറ്റ നിവേദ്യം','Otta Nivedyam',100],['കറുക ഹോമം','Karuka Homam',50],['ഗണപതി ഹോമം','Ganapathi Homam',250],['മൃത്യുഞ്ജയ ഹോമം','Mrityunjaya Homam',750],['പൂജ','Pooja',150],['ത്രികാല പൂജ','Thrikala Pooja',500],['ശനി പൂജ','Shani Pooja',150],['വാർഷിക പൂജ','Varshika Pooja',1000],['തക്കോൽ പൂജ','Thakkol Pooja',50],['മാലപൂജിക്കൽ','Mala Poojikkal',50],['സർവ്വൈശ്വര്യ പൂജ','Sarvaishwarya Pooja',501],['ഐക്യമത്യ പുഷ്പാഞ്ജലി','Aikyamatya Pushpanjali',40],['സ്വയംവര പുഷ്പാഞ്ജലി','Swayamvara Pushpanjali',80],['വിദ്യാമന്ത്ര പുഷ്പാഞ്ജലി','Vidyamanthra Pushpanjali',30],['ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി','Bhagyasooktha Pushpanjali',30],['ശത്രുസംഹാര പുഷ്പാഞ്ജലി','Shathru Samhara Pushpanjali',30],['അലങ്കാര ദീപം','Alankara Deepam',700],['ഭഗവതി സേവ','Bhagavathi Seva',250],['ചുറ്റുവിളക്ക്','Chuttuvilakku',1600],['കോമരം കൂടിയ ചുറ്റുവിളക്ക്','Komaram Chuttuvilakku',null],['കൽവിളക്ക് - ഒരെണ്ണം','Kalvilakku',200],['ദീപാരാധന','Deeparadhana',100],['കളഭം ചാർത്തൽ','Kalabham Charthal',500],['അന്നദാനം','Annadanam',12000],['എഴുത്തിനിരുത്ത്','Ezhuthiniruthu',151],['കെട്ടുനിറ','Kettunira',150],['വിവാഹം','Vivaham',2500],['വീഡിയോ ചിത്രീകരണം','Video Chithrikaranam',200],['വാഹന പൂജ - കാർ / വലിയ വാഹനം','Vehicle Pooja Car',100],['വാഹന പൂജ - ബൈക്ക് / ഇരുചക്ര വാഹനം','Vehicle Pooja Bike',50]];
@@ -284,7 +283,7 @@ async function saveBill(){
    id:billId, name, star:document.getElementById('mainStar').value,
    families:families.filter(f=>f.name),
    items:cart.map(x=>({...x,itemName:offerings[x.i]?.[0]||'വഴിപാട്'})),
-   total:total(), time:now.toISOString(), staff:currentStaff||'സ്റ്റാഫ്', createdBy:auth.currentUser?auth.currentUser.uid:'offline',
+   total:total(), time:now.toISOString(), staff:currentStaff||'സ്റ്റാഫ്', createdBy:currentRole||'offline',
    vehicleNumber:hasVehicle?vehicleNumber:'', vehicleToken:null, ezhuthToken:null, dateKey,
    customFields:Object.fromEntries((settings.customFields||'').split('\n').map(x=>x.trim()).filter(Boolean).map((label,i)=>[label,(document.getElementById('custom_'+i)?.value||'').trim()]))
  };
@@ -410,4 +409,4 @@ function renderReport(){
 function printContent(mode,widthId){
  let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';
  document.body.classList.remove('print-thermal','print-normal');
- document.body.classList.add(mode==='thermal'
+ document.body.classList.add(mode==='thermal'?'print-thermal':'print
