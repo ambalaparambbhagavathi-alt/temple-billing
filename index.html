@@ -326,9 +326,6 @@ async function saveBill(){
  }
 }
 
-// -------------------------------------------------------------
-// മേൽശാന്തിക്ക് എളുപ്പത്തിൽ വായിക്കാനായി വലിയ ബോൾഡ് ഫോണ്ടിലുള്ള രസീത് ഡിസൈൻ
-// -------------------------------------------------------------
 function showReceipt(b){
  let dt=new Date(b.time).toLocaleString('ml-IN');
  let temple=esc(settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം');
@@ -410,4 +407,7 @@ function renderReport(){
  document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>കാലയളവ്: ${reportType==='daily'?d.toLocaleDateString('ml-IN'):reportType==='monthly'?d.toLocaleDateString('ml-IN',{month:'long',year:'numeric'}):d.getFullYear()}</p>${rows?`<table style="width:100%;border-collapse:collapse"><tr><th align=left>${reportType==='daily'?'സമയം / ഭക്തൻ':'തീയതി / മാസം'}</th><th align=right>വരുമാനം</th></tr>${rows}</table>`:''}<p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`;
 }
 
-function printContent(
+function printContent(mode,widthId){
+ let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';
+ document.body.classList.remove('print-thermal','print-normal');
+ document.body.classList.add(mode==='thermal'
