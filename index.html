@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<header class="top" id="topHeader" class="hidden">
+<header class="top" id="topHeader">
   <div class="brand">ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം</div>
   <div class="sub">ബില്ലിംഗ് സംവിധാനം · Offline & Cloud Sync</div>
   <div class="nav" id="mainNav">
@@ -200,7 +200,7 @@ function startCloudSync(){
 async function pushCloudSettings(){ if(currentRole==='admin') await cloudSettings().set(settings); }
 async function pushCloudOfferings(){ if(currentRole==='admin') await cloudOfferings().set({items:offerings}); }
 
-// Fixed Users & Passwords for instant smooth login without firebase auth bottlenecks
+// User Credentials
 const VALID_USERS = {
   admin: { pass: "admin123", role: "admin" },
   billing: { pass: "demo123", role: "billing" },
@@ -409,4 +409,5 @@ function renderReport(){
 function printContent(mode,widthId){
  let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';
  document.body.classList.remove('print-thermal','print-normal');
- document.body.classList.add(mode==='thermal'?'print-thermal':'print
+ document.body.classList.add(mode==='thermal'?'print-thermal':'print-normal');
+ document.documentElement.style.setProperty('--thermal-width
