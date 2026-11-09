@@ -142,6 +142,10 @@ const LOGIN_EMAILS = {
 };
 // Restore a previously verified role only when Firebase restores the same UID.
 const AUTH_CACHE_KEY='temple_verified_session_v1';
+const AUTH_LOGOUT_KEY='temple_explicit_logout_v1';
+function wasExplicitlyLoggedOut(){return localStorage.getItem(AUTH_LOGOUT_KEY)==='1'}
+function markExplicitLogout(){try{localStorage.setItem(AUTH_LOGOUT_KEY,'1')}catch(e){}}
+function clearExplicitLogout(){try{localStorage.removeItem(AUTH_LOGOUT_KEY)}catch(e){}}
 let authStateReady=false, authStateWaiters=[];
 function readVerifiedSession(){try{return JSON.parse(localStorage.getItem(AUTH_CACHE_KEY)||'null')}catch(e){return null}}
 function saveVerifiedSession(user,role,staff){if(user&&user.uid&&['admin','billing','treasurer'].includes(role)){localStorage.setItem(AUTH_CACHE_KEY,JSON.stringify({uid:user.uid,role,staff:staff||role,savedAt:Date.now()}));}}
@@ -334,6 +338,7 @@ async function demoLogin(){
      currentStaff=prompt('സ്റ്റാഫിന്റെ പേര് തിരഞ്ഞെടുക്കുക / നൽകുക',settings.staff[0]||'സ്റ്റാഫ്');
      if(!currentStaff){currentRole=null;await auth.signOut();showStatus('ലോഗിൻ റദ്ദാക്കി.');return}
    }else currentStaff=u==='admin'?'Admin':'Treasurer';
+   clearExplicitLogout();
    saveVerifiedSession(user,u,currentStaff);
    document.getElementById('adminNav').classList.toggle('hidden',u!=='admin');
    if(u==='treasurer')reportType='monthly';
@@ -352,8 +357,9 @@ async function demoLogin(){
  }
 }
 async function logout(){
- // Explicit Logout must clear the offline role cache as well as Firebase auth.
- // Otherwise the auth-state restore handler can reopen Billing after refresh.
+ // Record explicit logout synchronously before Firebase sign-out.
+ // A refresh before signOut resolves must not restore the previous role.
+ markExplicitLogout();
  stopCloudSync(); window.removeEventListener('online', syncPendingBills);
  clearVerifiedSession();
  currentRole=null;currentStaff='';
@@ -425,7 +431,14 @@ applyCustomization();renderCustomFields();renderOffers();renderCart();renderHist
 auth.onAuthStateChanged(user=>{
   try{
     const cached=readVerifiedSession();
-    if(user && cachedSessionIsValid(cached,user)){
+    if(wasExplicitlyLoggedOut()){
+      clearVerifiedSession();
+      currentRole=null;currentStaff='';
+      document.getElementById('adminNav').classList.add('hidden');
+      showPage('login');
+      const st=document.getElementById('loginStatus');
+      if(st)st.textContent='Logout ചെയ്തു. വീണ്ടും പ്രവേശിക്കാൻ Username, Password നൽകുക.';
+    }else if(user && cachedSessionIsValid(cached,user)){
       restoreCachedRole(cached);
       if(navigator.onLine){startCloudSync();syncPendingBills();}
       const st=document.getElementById('loginStatus');if(st)st.textContent=navigator.onLine?'മുൻപ് ലോഗിൻ ചെയ്ത അക്കൗണ്ട് തിരിച്ചറിഞ്ഞു.':'ഓഫ്‌ലൈൻ സെഷൻ പുനഃസ്ഥാപിച്ചു.';
