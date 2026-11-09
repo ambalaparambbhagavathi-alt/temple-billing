@@ -407,7 +407,7 @@ async function addNewOffering(){
     offerings.splice(0,offerings.length,...oldOfferings);
     saveLocalCache();
     console.error('Add offering sync error:',e);
-    toast('Cloud Sync പിശക്: '+(e.code||e.message||'Unknown error'));
+    toast('Cloud Sync പിശക്: '+(e.message||e.code||'Unknown error'
   }
 }
 function deleteSelectedOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let i=Number(document.getElementById('cfgOffer').value);if(!confirm('ഈ വഴിപാട് നീക്കണോ? പഴയ ബില്ലുകളിലെ രേഖകൾ നിലനിൽക്കും.'))return;offerings.splice(i,1);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));loadAdminSettings();renderOffers();toast('വഴിപാട് നീക്കി')}
