@@ -159,7 +159,7 @@ const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക
 const stars=['അശ്വതി','ഭരണി','കാർത്തിക','രോഹിണി','മകയിരം','തിരുവാതിര','പുണർതം','പൂയം','ആയില്യം','മകം','പൂരം','ഉത്രം','അത്തം','ചിത്തിര','ചോതി','വിശാഖം','അനിഴം','തൃക്കേട്ട','മൂലം','പൂരാടം','ഉത്രാടം','തിരുവോണം','അവിട്ടം','ചതയം','പൂരുരുട്ടാതി','ഉത്രട്ടാതി','രേവതി'];
 let cart=[],families=[],bills=[],currentRole=null,currentStaff='';let settings={billUser:'billing',billPass:'demo123',adminUser:'admin',adminPass:'admin123',staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',logoText:'',adminNotes:''};try{settings={...settings,...JSON.parse(localStorage.getItem('temple_test_settings')||'{}')};bills=JSON.parse(localStorage.getItem('temple_test_bills')||'[]')}catch(e){}
 try{let savedOffers=JSON.parse(localStorage.getItem('temple_test_offerings')||'null');if(savedOffers&&savedOffers.length===offerings.length)savedOffers.forEach((o,i)=>offerings[i][2]=o[2])}catch(e){}
-const starOpts=stars.map(s=>`<option>${s}</option>`).join('');document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;document.getElementById('reportDate').value=new Date().toISOString().slice(0,10);
+const starOpts=stars.map(s=>`<option>${s}</option>`).join('');document.getElementById('mainStar').innerHTML='<option value="">നക്ഷത്രം തിരഞ്ഞെടുക്കുക</option>'+starOpts;document.getElementById('reportDate').value=localDateKey(new Date());
 function renderOffers(){let q=document.getElementById('search').value.toLowerCase();document.getElementById('offers').innerHTML=offerings.map((o,i)=>({o,i})).filter(x=>(x.o[0]+x.o[1]).toLowerCase().includes(q)).map(({o,i})=>`<button class="offer" onclick="addOffer(${i})"><b>${o[0]}</b><span>${o[2]===null?'നിരക്ക് നൽകുക':'₹'+o[2]}</span></button>`).join('')||'<div class="muted">ഫലം ലഭിച്ചില്ല</div>'}
 function addOffer(i){
  let o=offerings[i]; if(!Array.isArray(o)||!o[0]){alert('വഴിപാടിന്റെ വിവരങ്ങൾ ലഭ്യമല്ല. പേജ് Refresh ചെയ്യുക.');return}
@@ -185,6 +185,12 @@ function toggleCalc(){document.getElementById('calc').classList.toggle('hidden')
 function localDateKey(date=new Date()){
  // Use India time on every device so the daily counter resets at the same moment.
  return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
+}
+function reportBillDateKey(b){
+ const savedKey=String(b?.dateKey||'');
+ if(/^\d{4}-\d{2}-\d{2}$/.test(savedKey))return savedKey;
+ const stamp=new Date(b?.time);
+ return Number.isNaN(stamp.getTime())?'':localDateKey(stamp);
 }
 async function saveBill(){
  const name=document.getElementById('mainName').value.trim();
@@ -281,7 +287,33 @@ let reportType='daily';function setReportType(t){
  if(currentRole==='treasurer' && t==='daily'){alert('Treasurer-ന് മാസ, വാർഷിക റിപ്പോർട്ടുകൾ മാത്രമാണ് ലഭിക്കുക');return}
  reportType=t;renderReport()
 }
-function renderReport(){if(currentRole==='treasurer' && reportType==='daily')reportType='monthly';let val=document.getElementById('reportDate').value||new Date().toISOString().slice(0,10),d=new Date(val+'T12:00:00');let list=bills.filter(b=>{let x=new Date(b.time);return reportType==='daily'?localDateKey(x)===val:reportType==='monthly'?x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth():x.getFullYear()===d.getFullYear()});let sum=list.reduce((s,b)=>s+b.total,0);let title=reportType==='daily'?(settings.reportDaily||'ഡെയിലി റിപ്പോർട്ട്'):reportType==='monthly'?(settings.reportMonthly||'മാസ റിപ്പോർട്ട്'):(settings.reportYearly||'വാർഷിക റിപ്പോർട്ട്');let rows='';if(reportType==='monthly'){let days={};list.forEach(b=>{let k=new Date(b.time).toLocaleDateString('en-CA');days[k]=(days[k]||0)+b.total});rows=Object.entries(days).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}if(reportType==='yearly'){let months={};list.forEach(b=>{let x=new Date(b.time),k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');months[k]=(months[k]||0)+b.total});rows=Object.entries(months).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('')}document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>കാലയളവ്: ${reportType==='daily'?d.toLocaleDateString('ml-IN'):reportType==='monthly'?d.toLocaleDateString('ml-IN',{month:'long',year:'numeric'}):d.getFullYear()}</p>${rows?`<table style="width:100%;border-collapse:collapse"><tr><th align=left>തീയതി / മാസം</th><th align=right>വരുമാനം</th></tr>${rows}</table>`:''}<p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`}function printContent(mode,widthId){let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';document.body.classList.remove('print-thermal','print-normal');document.body.classList.add(mode==='thermal'?'print-thermal':'print-normal');document.documentElement.style.setProperty('--thermal-width',width);window.print();setTimeout(()=>document.body.classList.remove('print-thermal','print-normal'),800)}
+function renderReport(){
+ if(currentRole==='treasurer' && reportType==='daily')reportType='monthly';
+ const val=document.getElementById('reportDate').value||localDateKey(new Date());
+ const d=new Date(val+'T12:00:00');
+ const selectedMonth=val.slice(0,7), selectedYear=val.slice(0,4);
+ const list=bills.filter(b=>{
+   const key=reportBillDateKey(b);
+   return reportType==='daily'?key===val:
+     reportType==='monthly'?key.slice(0,7)===selectedMonth:
+     key.slice(0,4)===selectedYear;
+ });
+ const sum=list.reduce((s,b)=>s+(Number(b.total)||0),0);
+ const title=reportType==='daily'?(settings.reportDaily||'ഡെയിലി റിപ്പോർട്ട്'):reportType==='monthly'?(settings.reportMonthly||'മാസ റിപ്പോർട്ട്'):(settings.reportYearly||'വാർഷിക റിപ്പോർട്ട്');
+ let rows='';
+ if(reportType==='monthly'){
+   const days={};
+   list.forEach(b=>{const k=reportBillDateKey(b);if(k)days[k]=(days[k]||0)+(Number(b.total)||0)});
+   rows=Object.entries(days).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('');
+ }
+ if(reportType==='yearly'){
+   const months={};
+   list.forEach(b=>{const k=reportBillDateKey(b).slice(0,7);if(k)months[k]=(months[k]||0)+(Number(b.total)||0)});
+   rows=Object.entries(months).sort().map(([k,v])=>`<tr><td>${k}</td><td align=right>₹${v}</td></tr>`).join('');
+ }
+ document.getElementById('reportData').innerHTML=`<h2>${title}</h2><p>കാലയളവ്: ${reportType==='daily'?d.toLocaleDateString('ml-IN'):reportType==='monthly'?d.toLocaleDateString('ml-IN',{month:'long',year:'numeric'}):selectedYear}</p>${rows?`<table style="width:100%;border-collapse:collapse"><tr><th align=left>തീയതി / മാസം</th><th align=right>വരുമാനം</th></tr>${rows}</table>`:''}<p>ബില്ലുകളുടെ എണ്ണം: <b>${list.length}</b></p><div class="total"><span>ആകെ വരുമാനം</span><span>₹${sum}</span></div>`;
+}
+function printContent(mode,widthId){let width=document.getElementById(widthId||'receiptWidth')?.value||'80mm';document.body.classList.remove('print-thermal','print-normal');document.body.classList.add(mode==='thermal'?'print-thermal':'print-normal');document.documentElement.style.setProperty('--thermal-width',width);window.print();setTimeout(()=>document.body.classList.remove('print-thermal','print-normal'),800)}
 function showPage(id){if(!currentRole&&id!=='login'){id='login'}if(id==='admin'&&currentRole!=='admin'){alert('Admin പ്രവേശനം ആവശ്യമാണ്');return}if(id==='reports'&& !['admin','billing','treasurer'].includes(currentRole)){alert('പ്രവേശനാനുമതിയില്ല');return}['billing','history','reports','login','admin'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));if(id==='reports'){
  const reportBtns=document.querySelectorAll('#reports .actions button');
  if(reportBtns.length>=3){
