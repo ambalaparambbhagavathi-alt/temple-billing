@@ -105,8 +105,8 @@ function startCloudSync(){
   },err=>console.warn('Settings sync:',err)));
   cloudUnsubs.push(cloudOfferings().onSnapshot(snap=>{
     if(snap.exists && Array.isArray(snap.data().items)){
-      const remote=snap.data().items;
-      offerings.splice(0,offerings.length,...remote);
+      const remote=snap.data().items.map(o=>Array.isArray(o)?o:[o.ml,o.en,o.rate]);
+offerings.splice(0,offerings.length,...remote);
       saveLocalCache(); renderOffers();
       if(!document.getElementById('admin').classList.contains('hidden')) loadAdminSettings();
     }
@@ -118,7 +118,7 @@ async function pushCloudSettings(){
 }
 async function pushCloudOfferings(){
   if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudOfferings().set({items:offerings});
+  await cloudOfferings().set({items:offerings.map(o=>({ml:o[0],en:o[1],rate:o[2]}))});
 }
 
 
