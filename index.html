@@ -128,8 +128,16 @@ async function pushCloudSettings(){
   await cloudSettings().set(settings);
 }
 async function pushCloudOfferings(){
-  if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudOfferings().set({items:offerings.map(o=>({ml:o[0],en:o[1],rate:o[2]}))});
+  if(currentRole!=='admin' || !auth.currentUser)
+    throw new Error('Admin അനുമതി ആവശ്യമാണ്');
+
+  const safeItems = offerings.map(o => ({
+    ml: String(o[0] || ''),
+    en: String(o[1] || ''),
+    rate: o[2] === null ? null : Number(o[2])
+  }));
+
+  await cloudOfferings().set({items:safeItems});
 }
 
 
