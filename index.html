@@ -105,8 +105,8 @@ function startCloudSync(){
   },err=>console.warn('Settings sync:',err)));
   cloudUnsubs.push(cloudOfferings().onSnapshot(snap=>{
     if(snap.exists && Array.isArray(snap.data().items)){
-      const remote=snap.data().items.map(o=>Array.isArray(o)?o:[o.ml,o.en,o.rate]);
-offerings.splice(0,offerings.length,...remote);
+      const remote=snap.data().items;
+      offerings.splice(0,offerings.length,...remote);
       saveLocalCache(); renderOffers();
       if(!document.getElementById('admin').classList.contains('hidden')) loadAdminSettings();
     }
@@ -118,7 +118,7 @@ async function pushCloudSettings(){
 }
 async function pushCloudOfferings(){
   if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudOfferings().set({items:offerings.map(o=>({ml:o[0],en:o[1],rate:o[2]}))});
+  await cloudOfferings().set({items:offerings});
 }
 
 
@@ -129,6 +129,14 @@ const LOGIN_EMAILS = {
   billing: "akhileshashok32+billing@gmail.com",
   treasurer: "akhileshashok32+treasurer@gmail.com"
 };
+// Restore a previously verified role only when Firebase restores the same UID.
+const AUTH_CACHE_KEY='temple_verified_session_v1';
+let authStateReady=false, authStateWaiters=[];
+function readVerifiedSession(){try{return JSON.parse(localStorage.getItem(AUTH_CACHE_KEY)||'null')}catch(e){return null}}
+function saveVerifiedSession(user,role,staff){if(user&&user.uid&&['admin','billing','treasurer'].includes(role))localStorage.setItem(AUTH_CACHE_KEY,JSON.stringify({uid:user.uid,role,staff:staff||role,savedAt:Date.now()}))}
+function clearVerifiedSession(){localStorage.removeItem(AUTH_CACHE_KEY)}
+function waitForAuthState(){if(authStateReady)return Promise.resolve();return new Promise(resolve=>authStateWaiters.push(resolve))}
+
 const offerings=[['പുഷ്പാഞ്ജലി','Pushpanjali',10],['രക്തപുഷ്പാഞ്ജലി','Rakthapushpanjali',20],['നെയ്യ് വിളക്ക്','Neyvilakku',30],['നെയ്യ് വിളക്ക്','Neyvilakku',50],['നെയ്യ് വിളക്ക്','Neyvilakku',100],['രുദ്രാഭിഷേകം','Rudrabhishekam',50],['വെള്ള നിവേദ്യം','Vella Nivedyam',20],['എള്ളുതിരി','Elluthiri',20],['പിൻവിളക്ക്','Pinvilakku',20],['മുട്ടറുക്കൽ','Muttarukkal',10],['മഞ്ഞൾ അർച്ചന','Manjal Archana',30],['ജലധാര','Jaladhara',10],['ഇളനീർ അഭിഷേകം (ഇളനീർ കൊണ്ടുവരണം)','Elaneer Abhishekam',20],['രൂപം ഒപ്പിക്കൽ','Roopam Oppikkal',20],['നിരംജനം','Niranjanam',60],['ത്രിമധുരം','Trimadhuram',50],['വിളക്കുമാല','Vilakkumala',50],['കൂവളമാല','Koovala Mala',60],['തുളസിമാല','Thulasi Mala',60],['പായസം','Payasam',60],['പാൽപ്പായസം','Palpayasam',80],['കടുമ്പായസം','Kadumpayasam',200],['ചോറൂണ്','Choroonu',151],['ഒറ്റ നിവേദ്യം','Otta Nivedyam',100],['കറുക ഹോമം','Karuka Homam',50],['ഗണപതി ഹോമം','Ganapathi Homam',250],['മൃത്യുഞ്ജയ ഹോമം','Mrityunjaya Homam',750],['പൂജ','Pooja',150],['ത്രികാല പൂജ','Thrikala Pooja',500],['ശനി പൂജ','Shani Pooja',150],['വാർഷിക പൂജ','Varshika Pooja',1000],['തക്കോൽ പൂജ','Thakkol Pooja',50],['മാലപൂജിക്കൽ','Mala Poojikkal',50],['സർവ്വൈശ്വര്യ പൂജ','Sarvaishwarya Pooja',501],['ഐക്യമത്യ പുഷ്പാഞ്ജലി','Aikyamatya Pushpanjali',40],['സ്വയംവര പുഷ്പാഞ്ജലി','Swayamvara Pushpanjali',80],['വിദ്യാമന്ത്ര പുഷ്പാഞ്ജലി','Vidyamanthra Pushpanjali',30],['ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി','Bhagyasooktha Pushpanjali',30],['ശത്രുസംഹാര പുഷ്പാഞ്ജലി','Shathru Samhara Pushpanjali',30],['അലങ്കാര ദീപം','Alankara Deepam',700],['ഭഗവതി സേവ','Bhagavathi Seva',250],['ചുറ്റുവിളക്ക്','Chuttuvilakku',1600],['കോമരം കൂടിയ ചുറ്റുവിളക്ക്','Komaram Chuttuvilakku',null],['കൽവിളക്ക് - ഒരെണ്ണം','Kalvilakku',200],['ദീപാരാധന','Deeparadhana',100],['കളഭം ചാർത്തൽ','Kalabham Charthal',500],['അന്നദാനം','Annadanam',12000],['എഴുത്തിനിരുത്ത്','Ezhuthiniruthu',151],['കെട്ടുനിറ','Kettunira',150],['വിവാഹം','Vivaham',2500],['വീഡിയോ ചിത്രീകരണം','Video Chithrikaranam',200],['വാഹന പൂജ - കാർ / വലിയ വാഹനം','Vehicle Pooja Car',100],['വാഹന പൂജ - ബൈക്ക് / ഇരുചക്ര വാഹനം','Vehicle Pooja Bike',50]];
 const stars=['അശ്വതി','ഭരണി','കാർത്തിക','രോഹിണി','മകയിരം','തിരുവാതിര','പുണർതം','പൂയം','ആയില്യം','മകം','പൂരം','ഉത്രം','അത്തം','ചിത്തിര','ചോതി','വിശാഖം','അനിഴം','തൃക്കേട്ട','മൂലം','പൂരാടം','ഉത്രാടം','തിരുവോണം','അവിട്ടം','ചതയം','പൂരുരുട്ടാതി','ഉത്രട്ടാതി','രേവതി'];
 let cart=[],families=[],bills=[],currentRole=null,currentStaff='';let settings={billUser:'billing',billPass:'demo123',adminUser:'admin',adminPass:'admin123',staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',logoText:'',adminNotes:''};try{settings={...settings,...JSON.parse(localStorage.getItem('temple_test_settings')||'{}')};bills=JSON.parse(localStorage.getItem('temple_test_bills')||'[]')}catch(e){}
@@ -292,6 +300,7 @@ async function demoLogin(){
      currentStaff=prompt('സ്റ്റാഫിന്റെ പേര് തിരഞ്ഞെടുക്കുക / നൽകുക',settings.staff[0]||'സ്റ്റാഫ്');
      if(!currentStaff){currentRole=null;await auth.signOut();showStatus('ലോഗിൻ റദ്ദാക്കി.');return}
    }else currentStaff=u==='admin'?'Admin':'Treasurer';
+   saveVerifiedSession(user,u,currentStaff);
    document.getElementById('adminNav').classList.toggle('hidden',u!=='admin');
    if(u==='treasurer')reportType='monthly';
    toast(u==='admin'?'Admin ലോഗിൻ വിജയിച്ചു':u==='billing'?'Billing ലോഗിൻ വിജയിച്ചു':'Treasurer ലോഗിൻ വിജയിച്ചു');
@@ -365,52 +374,29 @@ function saveOfferRate(){
  let i=Number(document.getElementById('cfgOffer').value),r=Number(document.getElementById('cfgRate').value);
  if(!Number.isFinite(r)||r<0||!offerings[i]){alert('ശരിയായ നിരക്ക് നൽകുക');return}
  offerings[i][2]=r;saveLocalCache();loadAdminSettings();
- pushCloudOfferings().then(()=>toast('വഴിപാട് നിരക്ക് Cloud-ൽ അപ്ഡേറ്റ് ചെയ്തു')).catch(e=>{console.error('Offerings sync error:',e);toast('Cloud Sync പിശക്: '+(e.code||e.message||'Unknown error'));});
+ pushCloudOfferings().then(()=>toast('നിരക്ക് Cloud-ൽ അപ്ഡേറ്റ് ചെയ്തു')).catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു: '+(e.code||'')));
 }
-async function addNewOffering(){
-  if(currentRole!=='admin'){
-    alert('Admin അനുമതി ആവശ്യമാണ്');
-    return;
-  }
-
-  const ml=document.getElementById('newOfferMl').value.trim();
-  const en=document.getElementById('newOfferEn').value.trim();
-  const v=document.getElementById('newOfferRate').value.trim();
-
-  if(!ml||!en){
-    alert('മലയാളം, English പേരുകൾ നൽകുക');
-    return;
-  }
-
-  const rate=v===''?null:Number(v);
-
-  if(v!==''&&(!Number.isFinite(rate)||rate<0)){
-    alert('ശരിയായ നിരക്ക് നൽകുക');
-    return;
-  }
-
-  if(!confirm('ഈ വഴിപാട് ചേർക്കണോ?')) return;
-
-  const oldOfferings=offerings.map(x=>[...x]);
-  offerings.push([ml,en,rate]);
-
-  try{
-    await pushCloudOfferings();
-    saveLocalCache();
-    document.getElementById('newOfferMl').value='';
-    document.getElementById('newOfferEn').value='';
-    document.getElementById('newOfferRate').value='';
-    loadAdminSettings();
-    renderOffers();
-    toast('വഴിപാട് Cloud-ൽ വിജയകരമായി ചേർത്തു');
-  }catch(e){
-    offerings.splice(0,offerings.length,...oldOfferings);
-    saveLocalCache();
-    console.error('Add offering sync error:',e);
-    toast('Cloud Sync പിശക്: '+(e.message||e.code||'Unknown error'
-  }
-}
+function addNewOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let ml=document.getElementById('newOfferMl').value.trim(),en=document.getElementById('newOfferEn').value.trim(),v=document.getElementById('newOfferRate').value;if(!ml||!en){alert('മലയാളം, English പേരുകൾ നൽകുക');return}offerings.push([ml,en,v===''?null:Number(v)]);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));document.getElementById('newOfferMl').value='';document.getElementById('newOfferEn').value='';document.getElementById('newOfferRate').value='';loadAdminSettings();renderOffers();toast('വഴിപാട് ചേർത്തു')}
 function deleteSelectedOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let i=Number(document.getElementById('cfgOffer').value);if(!confirm('ഈ വഴിപാട് നീക്കണോ? പഴയ ബില്ലുകളിലെ രേഖകൾ നിലനിൽക്കും.'))return;offerings.splice(i,1);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));loadAdminSettings();renderOffers();toast('വഴിപാട് നീക്കി')}
 window.addEventListener('online',()=>{document.getElementById('syncStatus').textContent='ഇന്റർനെറ്റ് ലഭ്യമാണ് · Sync ശ്രമിക്കുന്നു';syncPendingBills()});window.addEventListener('offline',()=>{document.getElementById('syncStatus').textContent='ഓഫ്‌ലൈൻ · ബില്ലുകൾ ഈ ഫോണിൽ ക്യൂവിൽ സൂക്ഷിക്കും'});document.getElementById('syncStatus').textContent=navigator.onLine?'ഓൺലൈൻ':'ഓഫ്‌ലൈൻ';
-applyCustomization();renderCustomFields();renderOffers();renderCart();renderHistory();showPage('login');
+applyCustomization();renderCustomFields();renderOffers();renderCart();renderHistory();
+// Restore the last verified session after Firebase checks its LOCAL auth state.
+auth.onAuthStateChanged(user=>{
+  try{
+    if(user){
+      const cached=readVerifiedSession();
+      const valid=cached&&cached.uid===user.uid&&['admin','billing','treasurer'].includes(cached.role)&&!(cached.role==='admin'&&user.uid!=='0CtFHNJmPmOpfvxmgsSy2gt3ikZ2');
+      if(valid){
+        currentRole=cached.role; currentStaff=cached.staff||(cached.role==='admin'?'Admin':cached.role==='treasurer'?'Treasurer':'സ്റ്റാഫ്');
+        document.getElementById('adminNav').classList.toggle('hidden',currentRole!=='admin');
+        if(currentRole==='treasurer')reportType='monthly';
+        showPage(currentRole==='treasurer'?'reports':'billing');
+        if(navigator.onLine)startCloudSync();
+        syncPendingBills();
+        const st=document.getElementById('loginStatus');if(st)st.textContent=navigator.onLine?'മുൻപ് ലോഗിൻ ചെയ്ത അക്കൗണ്ട് തിരിച്ചറിഞ്ഞു.':'ഓഫ്‌ലൈൻ സെഷൻ പുനഃസ്ഥാപിച്ചു.';
+      }else{currentRole=null;currentStaff='';showPage('login')}
+    }else{currentRole=null;currentStaff='';showPage('login')}
+  }catch(e){console.error('Auth restore:',e);currentRole=null;currentStaff='';showPage('login')}
+  authStateReady=true;authStateWaiters.splice(0).forEach(fn=>fn());
+});
 </script></body></html>
