@@ -443,12 +443,37 @@ async function saveAdminSettings(){
  try{await pushCloudSettings();document.getElementById('adminMsg').textContent='എല്ലാ ഉപകരണങ്ങളിലേക്കും സേവ് ചെയ്തു.';toast('Cloud കസ്റ്റമൈസേഷൻ സേവ് ചെയ്തു')}
  catch(e){document.getElementById('adminMsg').textContent='Cloud Sync പരാജയപ്പെട്ടു: '+(e.code||e.message);toast('Cloud Sync പരാജയപ്പെട്ടു')}
 }
-function saveOfferRate(){
- if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}
- let i=Number(document.getElementById('cfgOffer').value),r=Number(document.getElementById('cfgRate').value);
- if(!Number.isFinite(r)||r<0||!offerings[i]){alert('ശരിയായ നിരക്ക് നൽകുക');return}
- offerings[i][2]=r;saveLocalCache();loadAdminSettings();
- pushCloudOfferings().then(()=>toast('നിരക്ക് Cloud-ൽ അപ്ഡേറ്റ് ചെയ്തു')).catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു: '+(e.code||'')));
+async function saveOfferRate(){
+  if(currentRole!=='admin'){
+    alert('Admin അനുമതി ആവശ്യമാണ്');
+    return;
+  }
+
+  const i=Number(document.getElementById('cfgOffer').value);
+  const r=Number(document.getElementById('cfgRate').value);
+
+  if(!Number.isInteger(i)||!offerings[i]||!Number.isFinite(r)||r<0){
+    alert('ശരിയായ നിരക്ക് നൽകുക');
+    return;
+  }
+
+  const oldRate=offerings[i][2];
+
+  offerings[i][2]=r;
+
+  try{
+    await pushCloudOfferings();
+    saveLocalCache();
+    loadAdminSettings();
+    renderOffers();
+    toast('നിരക്ക് Cloud-ൽ വിജയകരമായി സേവ് ചെയ്തു');
+  }catch(e){
+    offerings[i][2]=oldRate;
+    saveLocalCache();
+    loadAdminSettings();
+    console.error('Rate sync error:',e);
+    toast('Cloud പിശക്: '+(e.message||e.code||'Unknown error'));
+  }
 }
 function addNewOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let ml=document.getElementById('newOfferMl').value.trim(),en=document.getElementById('newOfferEn').value.trim(),v=document.getElementById('newOfferRate').value;if(!ml||!en){alert('മലയാളം, English പേരുകൾ നൽകുക');return}offerings.push([ml,en,v===''?null:Number(v)]);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));document.getElementById('newOfferMl').value='';document.getElementById('newOfferEn').value='';document.getElementById('newOfferRate').value='';loadAdminSettings();renderOffers();toast('വഴിപാട് ചേർത്തു')}
 function deleteSelectedOffering(){if(currentRole!=='admin'){alert('Admin അനുമതി ആവശ്യമാണ്');return}let i=Number(document.getElementById('cfgOffer').value);if(!confirm('ഈ വഴിപാട് നീക്കണോ? പഴയ ബില്ലുകളിലെ രേഖകൾ നിലനിൽക്കും.'))return;offerings.splice(i,1);saveLocalCache();pushCloudOfferings().catch(e=>toast('Cloud Sync പരാജയപ്പെട്ടു'));loadAdminSettings();renderOffers();toast('വഴിപാട് നീക്കി')}
