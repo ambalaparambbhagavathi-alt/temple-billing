@@ -129,7 +129,7 @@ async function pushCloudSettings(){
 }
 async function pushCloudOfferings(){
   if(currentRole!=='admin' || !auth.currentUser) throw new Error('Admin അനുമതി ആവശ്യമാണ്');
-  await cloudOfferings().set({items:offerings});
+  await cloudOfferings().set({items:offerings.map(o=>({ml:o[0],en:o[1],rate:o[2]}))});
 }
 
 
