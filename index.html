@@ -284,11 +284,9 @@ async function deleteBill(id){
  }catch(e){console.error(e);alert('ബിൽ Delete ചെയ്യാനായില്ല: '+(e.message||e))}
 }
 let reportType='daily';function setReportType(t){
- if(currentRole==='treasurer' && t==='daily'){alert('Treasurer-ന് മാസ, വാർഷിക റിപ്പോർട്ടുകൾ മാത്രമാണ് ലഭിക്കുക');return}
  reportType=t;renderReport()
 }
 function renderReport(){
- if(currentRole==='treasurer' && reportType==='daily')reportType='monthly';
  const val=document.getElementById('reportDate').value||localDateKey(new Date());
  const d=new Date(val+'T12:00:00');
  const selectedMonth=val.slice(0,7), selectedYear=val.slice(0,4);
@@ -317,7 +315,7 @@ function printContent(mode,widthId){let width=document.getElementById(widthId||'
 function showPage(id){if(!currentRole&&id!=='login'){id='login'}if(id==='admin'&&currentRole!=='admin'){alert('Admin പ്രവേശനം ആവശ്യമാണ്');return}if(id==='reports'&& !['admin','billing','treasurer'].includes(currentRole)){alert('പ്രവേശനാനുമതിയില്ല');return}['billing','history','reports','login','admin'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));if(id==='reports'){
  const reportBtns=document.querySelectorAll('#reports .actions button');
  if(reportBtns.length>=3){
-   reportBtns[0].classList.toggle('hidden',currentRole==='treasurer');
+   reportBtns[0].classList.toggle('hidden',false);
    reportBtns[1].classList.toggle('hidden',currentRole==='billing');
    reportBtns[2].classList.toggle('hidden',currentRole==='billing');
  }
