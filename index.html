@@ -63,6 +63,19 @@ input,select,textarea{width:100%;border:1px solid #ddcbb7;border-radius:9px;padd
 .pay-opts input{width:auto}
 .pay-tag{background:#e3f4ea;color:#18794e}
 .pay-tag.later{background:#fde0dc;color:#a3271a}
+.rc{color:#000;line-height:1.25;word-break:break-word}
+.rc .hd{text-align:center;font-weight:800;font-size:calc(15px*var(--rs,1))}
+.rc .sm{font-size:calc(11px*var(--rs,1));text-align:center;margin:2px 0}
+.rc .big{font-size:calc(23px*var(--rs,1));font-weight:900;margin:8px 0 2px}
+.rc .star{font-size:calc(20px*var(--rs,1));font-weight:800;margin-bottom:4px}
+.rc .fam{font-size:calc(15px*var(--rs,1));font-weight:700;margin:2px 0}
+.rc .it{display:flex;justify-content:space-between;gap:8px;font-size:calc(18px*var(--rs,1));font-weight:800;padding:5px 0;border-bottom:1px solid #000}
+.rc .tot{display:flex;justify-content:space-between;font-size:calc(25px*var(--rs,1));font-weight:900;border-top:3px solid #000;border-bottom:3px solid #000;margin-top:8px;padding:5px 0}
+.rc .pay{font-size:calc(19px*var(--rs,1));font-weight:900;text-align:center;margin:6px 0}
+.rc .tok{font-size:calc(17px*var(--rs,1));font-weight:800;margin:3px 0}
+.rc .meta{font-size:calc(11px*var(--rs,1));margin:6px 0}
+.rc .thx{text-align:center;font-size:calc(13px*var(--rs,1));font-weight:700;margin-top:8px}
+body.print-normal .receipt{--rs:.85!important}
 @page{margin:4mm}
 @media print{
   .print-hide,.no-print{display:none!important}
@@ -109,7 +122,7 @@ input,select,textarea{width:100%;border:1px solid #ddcbb7;border-radius:9px;padd
 <div class="field"><label>രസീത് തലക്കെട്ട്</label><input id="cfgReceiptHeading"></div><div class="field"><label>രസീതിലെ നന്ദി സന്ദേശം</label><input id="cfgReceiptThanks"></div>
 <div class="field"><label>ഡെയിലി റിപ്പോർട്ട് പേര്</label><input id="cfgReportDaily"></div><div class="field"><label>മാസ റിപ്പോർട്ട് പേര്</label><input id="cfgReportMonthly"></div><div class="field"><label>വാർഷിക റിപ്പോർട്ട് പേര്</label><input id="cfgReportYearly"></div>
 <div class="field"><label>പ്രധാന നിറം</label><input id="cfgOrange" type="color"></div><div class="field"><label>തലക്കെട്ടിന്റെ നിറം</label><input id="cfgDeep" type="color"></div><div class="field"><label>പശ്ചാത്തല നിറം</label><input id="cfgCream" type="color"></div>
-<div class="field"><label>Thermal പേപ്പർ വീതി</label><select id="cfgThermalWidth"><option>58mm</option><option>80mm</option></select></div><div class="field"><label>റിപ്പോർട്ട് ഇമെയിൽ വിലാസം</label><input id="cfgEmail"></div><div class="field"><label>WhatsApp ഗ്രൂപ്പ് ലിങ്ക്</label><input id="cfgWhatsapp"></div>
+<div class="field"><label>Thermal പേപ്പർ വീതി</label><select id="cfgThermalWidth"><option>58mm</option><option>80mm</option></select></div><div class="field"><label>Thermal രസീതിലെ അക്ഷര വലുപ്പം</label><select id="cfgReceiptSize"><option value="1">സാധാരണ</option><option value="1.25">വലുത്</option><option value="1.5">വളരെ വലുത്</option></select></div><div class="field"><label>റിപ്പോർട്ട് ഇമെയിൽ വിലാസം</label><input id="cfgEmail"></div><div class="field"><label>WhatsApp ഗ്രൂപ്പ് ലിങ്ക്</label><input id="cfgWhatsapp"></div>
 </div>
 <div class="field"><label>നക്ഷത്രങ്ങളുടെ പട്ടിക (ഓരോ വരിയിലും ഒന്ന്; ഒഴിച്ചിട്ടാൽ സാധാരണ 27 നക്ഷത്രങ്ങൾ)</label><textarea id="cfgStars" rows="5"></textarea></div>
 <div class="field"><label>അധിക ഭക്ത വിവര ഫീൽഡുകൾ (ഓരോ വരിയിലും ഒന്ന്; ഉദാ: മൊബൈൽ നമ്പർ, വിലാസം)</label><textarea id="cfgCustomFields" rows="3"></textarea></div>
@@ -170,7 +183,7 @@ const DEFAULT_STARS=['അശ്വതി','ഭരണി','കാർത്തി�
 const offerings=DEFAULT_OFFERINGS.map(o=>[...o]);
 const stars=[...DEFAULT_STARS];
 let cart=[],families=[],bills=[],currentRole=null,currentStaff='';
-let settings={staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',payShow:true,payOptions:'ക്യാഷ്\nUPI\nപിന്നീട് നൽകും*',receiptShowPay:true,rptDailyBillCount:true,rptDailyOfferCount:true,rptDailyItems:true,rptDailyPay:true,rptMonthlyBillCount:false,rptMonthlyPay:false,rptYearlyBillCount:false,rptYearlyPay:false,historyDailyLimit:62};
+let settings={staff:['സ്റ്റാഫ് 1','സ്റ്റാഫ് 2'],normalReceipt:false,templeName:'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം',subtitle:'ബില്ലിംഗ് സംവിധാനം',address:'',phone:'',receiptThanks:'നന്ദി · വീണ്ടും വരിക',receiptHeading:'ക്ഷേത്ര രസീത്',reportDaily:'ഡെയിലി റിപ്പോർട്ട്',reportMonthly:'മാസ റിപ്പോർട്ട്',reportYearly:'വാർഷിക റിപ്പോർട്ട്',orange:'#d97706',deep:'#9a3412',cream:'#fff8ed',normalPrint:true,thermalPrint:true,pdfPrint:true,thermalWidth:'80mm',customFields:'',starsText:'',emailRecipient:'',whatsappLink:'',payShow:true,payOptions:'ക്യാഷ്\nUPI\nപിന്നീട് നൽകും*',receiptShowPay:true,rptDailyBillCount:true,rptDailyOfferCount:true,rptDailyItems:true,rptDailyPay:true,rptMonthlyBillCount:false,rptMonthlyPay:false,rptYearlyBillCount:false,rptYearlyPay:false,historyDailyLimit:62,receiptSize:'1.25'};
 // Passwords must never live in settings (they were synced to Firestore and readable by all staff).
 const LEGACY_SETTING_KEYS=['billUser','billPass','adminUser','adminPass','logoText','adminNotes'];
 function stripLegacy(o){LEGACY_SETTING_KEYS.forEach(k=>delete o[k]);return o}
@@ -411,9 +424,29 @@ async function syncPendingBills(){
 function showReceipt(b){
   const dt=new Date(b.time).toLocaleString('ml-IN');
   const temple=esc(settings.templeName||'ഭൂമിവാതുക്കൽ അമ്പലപ്പറമ്പ് ശ്രീ ഭഗവതിക്ഷേത്രം');
-  const itemRows=(b.items||[]).map(x=>`<tr><td>${esc(x.itemName||'വഴിപാട്')} × ${Number(x.qty)||1}</td><td align="right">₹${(Number(x.rate)||0)*(Number(x.qty)||1)}</td></tr>`).join('');
+  const scale=Math.min(2,Math.max(.8,Number(settings.receiptSize)||1.25));
+  const itemRows=(b.items||[]).map(x=>{const q=Number(x.qty)||1,r=Number(x.rate)||0;return `<div class="it"><span>${esc(x.itemName||'വഴിപാട്')}${q>1?' × '+q:''}</span><span>₹${r*q}</span></div>`}).join('');
   const w=settings.thermalWidth==='58mm'?'58mm':'80mm';
-  document.getElementById('receiptHost').innerHTML=`<div class="receipt print-area"><h3>${temple}</h3>${settings.address?`<p style="text-align:center">${esc(settings.address)}</p>`:''}${settings.phone?`<p style="text-align:center">ഫോൺ: ${esc(settings.phone)}</p>`:''}<p style="text-align:center"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></p><p>ബിൽ നമ്പർ: ${esc(b.id)}<br>തീയതി: ${esc(dt)}<br>പേര്: ${esc(b.name)}<br>നക്ഷത്രം: ${esc(b.star||'—')}${settings.receiptShowPay!==false&&b.paymentMode?`<br>പേയ്മെന്റ്: <b>${esc(payText(b))}</b>`:''}${b.vehicleNumber?`<br>വാഹന നമ്പർ: ${esc(b.vehicleNumber)}`:''}${b.vehicleToken?`<br>വാഹനപൂജ ടോക്കൺ: <b>${esc(b.vehicleToken)}</b>`:''}${b.ezhuthToken?`<br>എഴുത്തിനിരുത്ത് ടോക്കൺ: <b>${esc(b.ezhuthToken)}</b>`:''}${Object.entries(b.customFields||{}).map(([k,v])=>v?`<br>${esc(k)}: ${esc(v)}`:'').join('')}</p>${(b.families||[]).map(f=>`<p>കുടുംബാംഗം: ${esc(f.name)} · ${esc(f.star||'—')}</p>`).join('')}<table>${itemRows}<tr><td><b>ആകെ</b></td><td align="right"><b>₹${Number(b.total)||0}</b></td></tr></table><p style="text-align:center">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</p><p style="text-align:right;font-size:7px;color:#d5d5d5;margin-top:12px;letter-spacing:.2px">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</p><div class="print-tools no-print"><select id="receiptWidth"><option value="58mm" ${w==='58mm'?'selected':''}>58mm Thermal</option><option value="80mm" ${w==='80mm'?'selected':''}>80mm Thermal</option></select>${settings.thermalPrint!==false?`<button class="btn" onclick="printContent('thermal','receiptWidth','receipt')">Thermal Receipt Print</button>`:''}${settings.normalReceipt&&settings.normalPrint!==false?`<button class="btn secondary" onclick="printContent('normal',null,'receipt')">A4 Receipt Print</button>`:''}${settings.pdfPrint!==false?`<button class="btn dark" onclick="printContent('pdf',null,'receipt')">PDF ആയി സേവ് ചെയ്യുക</button>`:''}</div></div>`;
+  const showPay=settings.receiptShowPay!==false&&b.paymentMode;
+  const customs=Object.entries(b.customFields||{}).map(([k,v])=>v?`<div class="meta" style="margin:2px 0">${esc(k)}: ${esc(v)}</div>`:'').join('');
+  document.getElementById('receiptHost').innerHTML=`<div class="receipt print-area rc" style="--rs:${scale}">
+<div class="hd">${temple}</div>
+${settings.address?`<div class="sm">${esc(settings.address)}</div>`:''}${settings.phone?`<div class="sm">ഫോൺ: ${esc(settings.phone)}</div>`:''}
+<div class="sm"><b>${esc(settings.receiptHeading||'ക്ഷേത്ര രസീത്')}</b></div>
+<div class="big">${esc(b.name)}</div>
+<div class="star">നക്ഷത്രം: ${esc(b.star||'—')}</div>
+${(b.families||[]).map(f=>`<div class="fam">${esc(f.name)} · ${esc(f.star||'—')}</div>`).join('')}
+${b.vehicleNumber?`<div class="tok">വാഹന നമ്പർ: ${esc(b.vehicleNumber)}</div>`:''}
+${b.vehicleToken?`<div class="tok">വാഹനപൂജ ടോക്കൺ: ${esc(b.vehicleToken)}</div>`:''}
+${b.ezhuthToken?`<div class="tok">എഴുത്തിനിരുത്ത് ടോക്കൺ: ${esc(b.ezhuthToken)}</div>`:''}
+<div style="margin-top:8px;border-top:2px solid #000">${itemRows}</div>
+<div class="tot"><span>ആകെ</span><span>₹${Number(b.total)||0}</span></div>
+${showPay?`<div class="pay">${esc(payText(b))}${payUnpaid(b)?'':' · ₹'+(Number(b.total)||0)}</div>`:''}
+${customs}
+<div class="meta">ബിൽ നമ്പർ: ${esc(b.id)}<br>${esc(dt)}</div>
+<div class="thx">${esc(settings.receiptThanks||'നന്ദി · വീണ്ടും വരിക')}</div>
+<div style="text-align:right;font-size:7px;color:#d5d5d5;margin-top:10px;letter-spacing:.2px">created by അഖിലേഷ് കൊന്നപ്പാലംകണ്ടി</div>
+<div class="print-tools no-print"><select id="receiptWidth"><option value="58mm" ${w==='58mm'?'selected':''}>58mm Thermal</option><option value="80mm" ${w==='80mm'?'selected':''}>80mm Thermal</option></select>${settings.thermalPrint!==false?`<button class="btn" onclick="printContent('thermal','receiptWidth','receipt')">Thermal Receipt Print</button>`:''}${settings.normalReceipt&&settings.normalPrint!==false?`<button class="btn secondary" onclick="printContent('normal',null,'receipt')">A4 Receipt Print</button>`:''}${settings.pdfPrint!==false?`<button class="btn dark" onclick="printContent('pdf',null,'receipt')">PDF ആയി സേവ് ചെയ്യുക</button>`:''}</div></div>`;
 }
 // Prints only the chosen area. Everything else is removed from the print layout
 // (display:none, not just invisible), which also prevents blank extra pages.
@@ -428,6 +461,19 @@ function printContent(mode,widthId,scope){
   document.body.classList.remove('print-thermal','print-normal');
   document.body.classList.add(mode==='thermal'?'print-thermal':'print-normal');
   document.documentElement.style.setProperty('--thermal-width',width);
+  // Thermal: make the print page exactly as wide as the roll and as tall as the receipt,
+  // so the phone's print preview is not a big A4 page with a tiny receipt in the corner.
+  let st=document.getElementById('pageSizeStyle');
+  if(!st){st=document.createElement('style');st.id='pageSizeStyle';document.head.appendChild(st)}
+  st.textContent='';
+  if(mode==='thermal'){
+    const prev=target.style.cssText;
+    target.style.cssText=prev+';width:'+width+';max-width:none;padding:2mm;margin:0;border:0;box-sizing:border-box';
+    const hpx=target.getBoundingClientRect().height;
+    target.style.cssText=prev;
+    const mm=Math.max(40,Math.ceil(hpx*25.4/96)+10);
+    st.textContent='@page{size:'+width+' '+mm+'mm;margin:0}';
+  }
   window.print();
 }
 
@@ -690,7 +736,7 @@ function applyCustomization(){
   document.documentElement.style.setProperty('--cream',settings.cream||'#fff8ed');
   applyStars();renderPayOptions();
 }
-const ADMIN_FIELD_MAP={cfgTempleName:'templeName',cfgSubtitle:'subtitle',cfgAddress:'address',cfgPhone:'phone',cfgReceiptHeading:'receiptHeading',cfgReceiptThanks:'receiptThanks',cfgReportDaily:'reportDaily',cfgReportMonthly:'reportMonthly',cfgReportYearly:'reportYearly',cfgOrange:'orange',cfgDeep:'deep',cfgCream:'cream',cfgThermalWidth:'thermalWidth',cfgEmail:'emailRecipient',cfgWhatsapp:'whatsappLink',cfgStars:'starsText',cfgCustomFields:'customFields',cfgPayOptions:'payOptions',cfgHistoryLimit:'historyDailyLimit'};
+const ADMIN_FIELD_MAP={cfgTempleName:'templeName',cfgSubtitle:'subtitle',cfgAddress:'address',cfgPhone:'phone',cfgReceiptHeading:'receiptHeading',cfgReceiptThanks:'receiptThanks',cfgReportDaily:'reportDaily',cfgReportMonthly:'reportMonthly',cfgReportYearly:'reportYearly',cfgOrange:'orange',cfgDeep:'deep',cfgCream:'cream',cfgThermalWidth:'thermalWidth',cfgEmail:'emailRecipient',cfgWhatsapp:'whatsappLink',cfgStars:'starsText',cfgCustomFields:'customFields',cfgPayOptions:'payOptions',cfgReceiptSize:'receiptSize',cfgHistoryLimit:'historyDailyLimit'};
 const ADMIN_BOOL_MAP={cfgPayShow:'payShow',cfgReceiptPay:'receiptShowPay',cfgRptDailyBill:'rptDailyBillCount',cfgRptDailyOffer:'rptDailyOfferCount',cfgRptDailyItems:'rptDailyItems',cfgRptDailyPay:'rptDailyPay',cfgRptMonthlyBill:'rptMonthlyBillCount',cfgRptMonthlyPay:'rptMonthlyPay',cfgRptYearlyBill:'rptYearlyBillCount',cfgRptYearlyPay:'rptYearlyPay'};
 function loadAdminSettings(){
   document.getElementById('cfgStaff').value=(settings.staff||[]).join('\n');
